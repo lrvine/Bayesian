@@ -8,15 +8,15 @@
 using std::ifstream;
 using std::cout;
 using std::endl;
-using std::cerr;
 using std::setw;
 
 //initialize all the information we need from training data
-naivebayesian::naivebayesian()
+naivebayesian::naivebayesian( char * train, char* input )
 {
-	ifstream training("data.txt");
+        cout<<" init "<<endl;
+	ifstream training(train);
 
-    if(!training){cerr<<"Can't open training data file!"<<endl;system("PAUSE"); exit(1);}
+        if(!training){cout<<"Can't open training data file!"<<endl;return;}
     
 	training>>traininstances>>attributes; // read the number of training instances and attributes
 
@@ -164,7 +164,7 @@ naivebayesian::naivebayesian()
 	for ( int ppp=0 ; ppp<numclass[attributes] ; ppp++)
 		count[ppp]=count[ppp]/traininstances;
 
-	classifier(protable , numclass ,  count , discrete);
+	classifier(protable , numclass ,  count , discrete , input);
 	//call function for classification
 
 	//release the memory
@@ -181,11 +181,11 @@ naivebayesian::naivebayesian()
 
 
 //calculate the probability of each choice and choose the greatest one as our prediction
-void naivebayesian::classifier(long double** protable,int*numclass ,double* count ,int *discrete)
+void naivebayesian::classifier(long double** protable,int*numclass ,double* count ,int *discrete, char* input)
 {
-	ifstream testing("test.txt");
+	ifstream testing(input);
 
-    if(!testing){cerr<<"Can't open training data file!"<<endl; system("PAUSE");exit(1);}
+    if(!testing){cout<<"Can't open training data file!"<<endl;return;}
 
 	testing>>testinstances;              //read the number of testing data
 
@@ -283,12 +283,12 @@ void naivebayesian::accuracy(int *outcome , int * result)
 		if (outcome[i]==result[i])
 			correct++;
 
-		cout<<"預測"<<outcome[i]<<"   實際為"<<result[i]<<endl;
+		cout<<"predict to be "<<outcome[i]<<" is actually "<<result[i]<<endl;
 	}
 	
-	cout<<"總共 "<<testinstances<<" 資料中 有"<<correct<<" 筆資料正確辨識"<< endl;
+	cout<<"total "<<testinstances<<" data hve "<<correct<<" correct prediction"<< endl;
 
 	double percentage=correct/testinstances; // calculate the accuracy
 
-	cout<<"準確率為"<<percentage*100<<"%"<<endl;
+	cout<<"accuracy is "<<percentage*100<<"%"<<endl;
 }
