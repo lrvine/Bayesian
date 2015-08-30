@@ -13,11 +13,11 @@ using std::cerr;
 using std::setw;
 
 //initialize all the information we need from training data
-bayesiannetwork::bayesiannetwork()
+bayesiannetwork::bayesiannetwork(char* train, char* input)
 {
-	ifstream counting("networkdata.txt");
+	ifstream counting(train);
 
-    if(!counting){cerr<<"Can't open training data file!"<<endl;system("PAUSE"); exit(1);}
+        if(!counting){cout<<"! Can't open training data file!"<<endl;return;}
     
 	counting>>traininstances>>attributes;// read the number of training instances and attributes
 
@@ -478,8 +478,8 @@ bayesiannetwork::bayesiannetwork()
 	}
 
 
-	ifstream training("networkdata.txt");
-    if(!training){cerr<<"Can't open training data file!"<<endl;system("PAUSE"); exit(1);}  
+	ifstream training(train);
+    if(!training){cout<<"Can't open training data file!"<<endl;system("PAUSE");return;}  
 	
 	training>>traininstances>>attributes;
 	
@@ -553,7 +553,7 @@ bayesiannetwork::bayesiannetwork()
 		cout<<endl;
 
 
-	classifier(cpt , numclass ,  count , parent);
+	classifier(cpt , numclass ,  count , parent, input);
 	//call function for classification
 
 
@@ -577,11 +577,11 @@ bayesiannetwork::bayesiannetwork()
 
 
 //calculate the probability of each choice and choose the greatest one as our prediction
-void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *count ,int **parent )
+void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *count ,int **parent,char* input)
 {
-	ifstream testing("networktest.txt");
+	ifstream testing(input);
 
-    if(!testing){cerr<<"Can't open training data file!"<<endl; system("PAUSE");exit(1);}
+        if(!testing){cout<<"Can't open training data file!"<<endl;return;}
 
 	testing>>testinstances;    //read the number of testing data
 
@@ -660,18 +660,24 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 	delete [] outcome;
 }
 
+//calculate the accuracy
 void bayesiannetwork::accuracy(int *outcome , int * result)
 {
+
+
 	double correct=0;// store the number of correct predictions
 
 	for( int i=0 ; i<testinstances; i++)//count the number of correct predictions 
 	{
 		if (outcome[i]==result[i])
 			correct++;
+
+		cout<<"predict to be "<<outcome[i]<<" is actually "<<result[i]<<endl;
 	}
-	cout<<"總共 "<<testinstances<<" 資料中 有"<<correct<<" 筆資料正確辨識"<< endl;
+	
+	cout<<"total "<<testinstances<<" data hve "<<correct<<" correct prediction"<< endl;
 
 	double percentage=correct/testinstances; // calculate the accuracy
 
-	cout<<"準確率為"<<percentage*100<<"%"<<endl;
+	cout<<"accuracy is "<<percentage*100<<"%"<<endl;
 }

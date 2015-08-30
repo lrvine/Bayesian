@@ -13,7 +13,7 @@ using std::cerr;
 #include "maxheap.h"
 
 template<class Type>
-maxheap<Type>::maxheap<Type>(int sz )
+maxheap<Type>::maxheap(int sz )
 {
 	maxsize = sz; n=0 ;
 	heap=new data<Type>[maxsize+1];
@@ -35,8 +35,9 @@ template<class Type>
 void maxheap<Type>::insert(const data<Type> x)
 {
 	if (n==maxsize){heapfull();return;}
-    n++;
-	for(int i=n;;){
+    	n++;
+	int i;
+	for(i=n;;){
 		if (i==1)break;
 		if (x.key <= heap[i/2].key) break;
 		heap[i]=heap[i/2];
@@ -50,7 +51,9 @@ void maxheap<Type>::deletemax(data<Type>& x)
 {
 	if(!n){heapempty();return;}
 	x=heap[1]; data <Type>k=heap[n]; n--;
-	for(int i=1,j=2;j<=n;)
+	int i;
+	int j;
+	for(i=1,j=2;j<=n;)
 	{
 		if(j<n)if(heap[j].key<heap[j+1].key)j++;
 		if (k.key>=heap[j].key)break;
