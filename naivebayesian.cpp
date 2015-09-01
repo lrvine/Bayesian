@@ -5,17 +5,13 @@
 
 #include "naivebayesian.h"
 
-using std::ifstream;
-using std::cout;
-using std::endl;
-using std::setw;
+using namespace std;
+
 
 //initialize all the information we need from training data
 naivebayesian::naivebayesian( char * train, char* input )
 {
-        cout<<" init "<<endl;
 	ifstream training(train);
-
         if(!training){cout<<"Can't open training data file!"<<endl;return;}
     
 	training>>traininstances>>attributes; // read the number of training instances and attributes
@@ -37,8 +33,8 @@ naivebayesian::naivebayesian( char * train, char* input )
 		count[c]=0;
 
 
-    //this "protable" store the count of every possible combination 
-    //and divide each of them by the total occurences	
+	//this "protable" store the count of every possible combination 
+	//and divide each of them by the total occurences	
 	long double** protable = new long double*[(attributes*numclass[attributes])]; 
 	for(int j=0; j<attributes; j++)
 	{
@@ -56,7 +52,7 @@ naivebayesian::naivebayesian( char * train, char* input )
 	}
 
 
-    //initialize the protable to be 0
+	//initialize the protable to be 0
 	for(int r=0 ; r<attributes; r++)   
 	{
 		if(discrete[r]==1)
@@ -80,7 +76,7 @@ naivebayesian::naivebayesian( char * train, char* input )
 	//use a array to store each instance for further processing
 	double *temp = new double[attributes+1];
 
-    //store the information of each instance into protable
+	//store the information of each instance into protable
 	for( int i=1 ; i<=traininstances; i++)
 	{
 
@@ -109,8 +105,7 @@ naivebayesian::naivebayesian( char * train, char* input )
 
 	delete [] temp;
 
-
-    //processing the information in the protalbe to get the proabability
+	//processing the information in the protalbe to get the proabability
 	for( int t=0 ; t< attributes ; t++)
 	{
 		if (discrete[t]==1)// if this attribute is discrete
@@ -184,8 +179,7 @@ naivebayesian::naivebayesian( char * train, char* input )
 void naivebayesian::classifier(long double** protable,int*numclass ,double* count ,int *discrete, char* input)
 {
 	ifstream testing(input);
-
-    if(!testing){cout<<"Can't open training data file!"<<endl;return;}
+	if(!testing){cout<<"Can't open training data file!"<<endl;return;}
 
 	testing>>testinstances;              //read the number of testing data
 
@@ -209,12 +203,12 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 	for( int a=0 ; a<testinstances ; a++)
 	{
 		for ( int m=0 ; m<numclass[attributes]; m++)
+			decision[m]=1;
 		//set the array's entries as 1 for each testing instance
-		decision[m]=1;
 
 		for (int u=0 ; u<=attributes; u++)
-		// read one instance for prediction
 			testing>>temp[u];
+		// read one instance for prediction
 
 		result[a]=temp[attributes];
 		// store the result
@@ -229,8 +223,7 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 					decision[x] *= protable[(j*numclass[attributes])+x][static_cast<int>(temp[j])-1];
 				}
 				else if (discrete[j]==0)
-				// if this attribute is continuous , then use the Gaussian distribution formular
-		        // to calculate it's contribution of probability 
+				// if this attribute is continuous , then use the Gaussian distribution formular to calculate it's contribution of probability 
 				{
 					long double a0=-pow( ( temp[j] - protable[(j*numclass[attributes])+x][0] ) , 2 ); 
 					long double a1=2 * pow( protable[(j*numclass[attributes])+x][1] , 2 );
@@ -247,7 +240,7 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 		
 		//decide which choice has the highest probability
 		int big=0;                                       
-	    long double hug=decision[0];
+		long double hug=decision[0];
 		for ( int v=1 ; v<numclass[attributes] ; v++)
 		{
 			if ( decision[v]>hug)

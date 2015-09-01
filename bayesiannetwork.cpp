@@ -31,7 +31,6 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	for(int c=0; c<numclass[attributes]; c++)
 		count[c]=0;
 
-//------------------------------------------------
 
 	int combinations=1;
 	for(int com=(attributes-1) ; com>1 ; com--)
@@ -103,7 +102,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		for (int bb=0 ; bb<=attributes ; bb++)
 			counting>>temp0[bb];
 
-        for (int h=0 ; h< attributes ; h++)
+		for (int h=0 ; h< attributes ; h++)
 			ccc[h*numclass[attributes]+temp0[attributes]-1][temp0[h]-1 ]++;
 
 		for(int hh=0 ; hh < combinations ; hh++)
@@ -120,22 +119,6 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 
 	delete [] temp0;
 
-
-/*	
-	for( int test2=0 ; test2< combinations ; test2++)
-	{
-		for( int test3=(test2*numclass[attributes]) ; test3< ( (test2+1)*numclass[attributes] ) ; test3++)
-		{
-			for( int test4=0 ; test4< numclass[ rank[test2][0] ]*numclass[ rank[test2][1] ] ; test4++)
-			{
-				cout<<bbb[test3][test4]<<" " ;
-			}
-			cout<<endl;
-		}
-	
-	}
-	cout<<endl;
-*/
 
 
 	for( int t=0 ; t< attributes ; t++)
@@ -292,7 +275,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	data<int> mmm;
 	int base = 1;
 
-    for(int combi=0 ; combi < combinations ; combi ++ )
+	for(int combi=0 ; combi < combinations ; combi ++ )
 	{
 		maxweight->deletemax(mmm);
 
@@ -370,7 +353,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	for(int redo=0 ; redo<attributes ; redo++)
 	{
 		int min=(attributes+1);
-        int point=0;
+		int point=0;
 
 		for(int redo1=0 ; redo1<attributes ; redo1++)
 		{
@@ -479,7 +462,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 
 
 	ifstream training(train);
-    if(!training){cout<<"Can't open training data file!"<<endl;system("PAUSE");return;}  
+	if(!training){cout<<"Can't open training data file!"<<endl;return;}  
 	
 	training>>traininstances>>attributes;
 	
@@ -639,7 +622,7 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 
 	    //decide which choice has the highest probability
 		int big=0;                                         
-	    long double hug=decision[0];
+		long double hug=decision[0];
 		for ( int v=1 ; v<numclass[attributes] ; v++)
 		{
 			if ( decision[v]>hug)
@@ -651,7 +634,7 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 		outcome[a]=(big+1);
 	}
 	accuracy ( outcome , result );
-	//call function "caauracy" to calculate the accuracy 
+	//call function "accuracy" to calculate the accuracy 
 
 	//release memory
 	delete [] result;
