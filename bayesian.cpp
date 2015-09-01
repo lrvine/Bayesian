@@ -19,7 +19,7 @@ void bayesian::accuracy(int *outcome , int * result)
 //		cout<<"predict to be "<<outcome[i]<<" is actually "<<result[i]<<endl;
 	}
 	
-	cout<<"total "<<testinstances<<" data hve "<<correct<<" correct prediction"<< endl;
+	cout<<"total "<<testinstances<<" data have "<<correct<<" correct prediction"<< endl;
 
 	double percentage=correct/testinstances; // calculate the accuracy
 
