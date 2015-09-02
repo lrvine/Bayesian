@@ -11,7 +11,8 @@ using namespace std;
 //initialize all the information we need from training data
 naivebayesian::naivebayesian( char * train, char* input )
 {
-	ifstream training(train);
+	ifstream training;
+        training.open(train);
         if(!training){cout<<"Can't open training data file!"<<endl;return;}
     
 	training>>traininstances>>attributes; // read the number of training instances and attributes
@@ -104,6 +105,7 @@ naivebayesian::naivebayesian( char * train, char* input )
 	}
 
 	delete [] temp;
+        training.close();
 
 	//processing the information in the protalbe to get the proabability
 	for( int t=0 ; t< attributes ; t++)

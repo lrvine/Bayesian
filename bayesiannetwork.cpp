@@ -6,20 +6,24 @@
 #include "bayesiannetwork.h"
 #include "maxheap.cpp"
 
-using std::ifstream;
-using std::cout;
-using std::endl;
-using std::cerr;
-using std::setw;
+using namespace std;
+
 
 //initialize all the information we need from training data
 bayesiannetwork::bayesiannetwork(char* train, char* input)
 {
-	ifstream counting(train);
+	ifstream counting;
+        counting.open(train);
 
         if(!counting){cout<<"! Can't open training data file!"<<endl;return;}
     
 	counting>>traininstances>>attributes;// read the number of training instances and attributes
+
+	// TODO : implement handling continuous data. This is just a placeholder
+	int *discrete = new int[attributes]; 
+	//this array store the information about each attribute is continuous or not
+	for(int z=0; z<attributes ; z++)     //  read the information about continuous or not
+		counting>>discrete[z];
 
 	int *numclass= new int[attributes+1]; 
 	//this array store the number of classes of each attribute
@@ -118,6 +122,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	}
 
 	delete [] temp0;
+        counting.close();
 
 
 
@@ -461,14 +466,14 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	}
 
 
-	ifstream training(train);
+	ifstream training;
+        training.open(train);
 	if(!training){cout<<"Can't open training data file!"<<endl;return;}  
 	
-	training>>traininstances>>attributes;
-	
-	for(int b=0; b<=attributes; b++)  
-		training>>numclass[b];
-
+	// TODO : find a better way to skip item
+	double dummy;	
+	for(int b=0; b<=(attributes*2+2); b++)  
+		training>>dummy;
 
 	double *temp = new double[attributes+1];
 
@@ -495,6 +500,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 
 
 	delete [] temp;
+        training.close();
 
     //processing the information in the protalbe to get the proabability of each conjunction
 	for( int t1=0 ; t1< attributes ; t1++)
@@ -552,9 +558,10 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	for( int pa=0 ; pa< attributes ; pa++)
 		delete [] parent[pa];
 
-    delete [] parent;
+	delete [] parent;
 	delete [] cpt;
 	delete [] numclass;
+	delete [] discrete;
 	delete [] count;
 }
 
