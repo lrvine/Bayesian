@@ -1,11 +1,9 @@
 #include <iostream>
 #include <stdlib.h>
-using std::cout;
-using std::endl;
-
 #include "naivebayesian.h"
 #include "bayesiannetwork.h"
 
+using namespace std;
 
 int main( int argc, char** argv ){
 
@@ -25,11 +23,12 @@ if( argc >= 4 ){
 	cout<<" You need to provide training data and input data for prediction. Please read README"<<endl;
 }
 
-if( method == 1 ){
-  bayesiannetwork b(train, input);
-}else{
-  naivebayesian a(train, input);
+if( method == 0 ){
+  naivebayesian method0(train, input);
+}else if( method == 1 ){
+  bayesiannetwork method1(train, input);
 }
+
 return 0;
 }
 
