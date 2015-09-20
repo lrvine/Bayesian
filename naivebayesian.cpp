@@ -9,30 +9,36 @@ using namespace std;
 
 
 //initialize all the information we need from training data
-naivebayesian::naivebayesian( char * train, char* input )
+naivebayesian::naivebayesian( char * train, char* input ,char* cfg)
 {
-	ifstream training;
-        training.open(train);
-        if(!training){cout<<"Can't open training data file!"<<endl;return;}
+	cout<<"NaiveBayesian"<<endl;
+	ifstream configure;
+        configure.open(cfg);
+        if(!configure){cout<<"Can't open configuration file!"<<endl;return;}
     
-	training>>traininstances>>attributes; // read the number of training instances and attributes
+	configure>>traininstances>>testinstances>>attributes; // read the number of training instances and attributes
 
 	int *discrete = new int[attributes]; 
 	//this array store the information about each attribute is continuous or not
 	for(int z=0; z<attributes ; z++)     //  read the information about continuous or not
-		training>>discrete[z];
+		configure>>discrete[z];
 
 
 	int *numclass= new int[attributes+1];  
 	//this array store the number of classes of each attribute
 	for(int b=0; b<=attributes; b++)     // read the number of classes
-		training>>numclass[b];
+		configure>>numclass[b];
 
 	double *count = new double[numclass[attributes]];
 	//this array store the total number of each decision's class in training data
 	for(int c=0; c<numclass[attributes]; c++)
 		count[c]=0;
 
+	configure.close();
+
+	ifstream training;
+        training.open(train);
+        if(!training){cout<<"Can't open training data file!"<<endl;return;}
 
 	//this "protable" store the count of every possible combination 
 	//and divide each of them by the total occurences	
@@ -183,7 +189,6 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 	ifstream testing(input);
 	if(!testing){cout<<"Can't open training data file!"<<endl;return;}
 
-	testing>>testinstances;              //read the number of testing data
 
 	int *result= new int[testinstances]; //this array store the real result for comparison
 	for(int w=0; w<testinstances; w++)
@@ -208,11 +213,11 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 			decision[m]=1;
 		//set the array's entries as 1 for each testing instance
 
-		for (int u=0 ; u<=attributes; u++)
+		for (int u=0 ; u< attributes; u++)
 			testing>>temp[u];
 		// read one instance for prediction
 
-		result[a]=temp[attributes];
+		testing>> result[a];
 		// store the result
 
 		for( int x=0 ; x<numclass[attributes] ; x++)

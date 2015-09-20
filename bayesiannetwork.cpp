@@ -10,25 +10,25 @@ using namespace std;
 
 
 //initialize all the information we need from training data
-bayesiannetwork::bayesiannetwork(char* train, char* input)
+bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 {
-	ifstream counting;
-        counting.open(train);
-
-        if(!counting){cout<<"! Can't open training data file!"<<endl;return;}
+	cout<<"Baysiannetwork"<<endl;
+	ifstream configure;
+        configure.open(cfg);
+        if(!configure){cout<<"! Can't open configuration file!"<<endl;return;}
     
-	counting>>traininstances>>attributes;// read the number of training instances and attributes
+	configure>>traininstances>>testinstances>>attributes;// read the number of training instances and attributes
 
 	// TODO : implement handling continuous data. This is just a placeholder
 	int *discrete = new int[attributes]; 
 	//this array store the information about each attribute is continuous or not
 	for(int z=0; z<attributes ; z++)     //  read the information about continuous or not
-		counting>>discrete[z];
+		configure>>discrete[z];
 
 	int *numclass= new int[attributes+1]; 
 	//this array store the number of classes of each attribute
 	for(int v=0; v<=attributes; v++)   // read the number of classes
-		counting>>numclass[v];
+		configure>>numclass[v];
 
 	double *count = new double[numclass[attributes]]; 
 	//this array store the total number of each decision's class in training data
@@ -36,12 +36,18 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		count[c]=0;
 
 
+	configure.close();
 	int combinations=1;
 	for(int com=(attributes-1) ; com>1 ; com--)
 		combinations+=com;
 
-	cout<<"combinatinos "<< combinations << endl<<endl; 
 
+	//cout<<"combinatinos "<< combinations << endl<<endl; 
+
+	ifstream counting;
+        counting.open(train);
+
+        if(!counting){cout<<"! Can't open training data file!"<<endl;return;}
 
 	int **rank= new int *[combinations];
 	for(int zz=0 ; zz< combinations ; zz++)   
@@ -337,7 +343,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		}
 	}
 
-	
+/*	
 	for( int atest=0 ; atest< attributes ; atest++)
 	{
 		for( int atest1=0 ; atest1< attributes ; atest1++)
@@ -346,7 +352,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		cout<<endl;
 	}
 	cout<<endl;
-
+*/
 
 
 	int *transfer= new int[attributes];
@@ -379,17 +385,18 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		}
 		
 		transfer[point]=(attributes+1);
-
+/*
 		cout<<min<<" "<<point<<"   ";
 		for( int te=0 ; te< attributes ; te++)
 		{
 			cout<<transfer[te]<<" ";
 		}
 		cout<<endl;
+*/
 	}
-	cout<<endl;
+//	cout<<endl;
 
-
+/*
 	for( int test=0 ; test< attributes ; test++)
 	{
 		for( int test1=0 ; test1< attributes ; test1++)
@@ -398,7 +405,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 		cout<<endl;
 	}
 	cout<<endl;
-
+*/
 
 //------------------------------------------------
 
@@ -470,14 +477,9 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
         training.open(train);
 	if(!training){cout<<"Can't open training data file!"<<endl;return;}  
 	
-	// TODO : find a better way to skip item
-	double dummy;	
-	for(int b=0; b<=(attributes*2+2); b++)  
-		training>>dummy;
-
 	double *temp = new double[attributes+1];
 
-    //store the counts of each possible conjunction into cpt
+	//store the counts of each possible conjunction into cpt
 	for( int i=1 ; i<=traininstances; i++)
 	{
 		for (int y=0 ; y<=attributes ; y++)
@@ -537,9 +539,9 @@ bayesiannetwork::bayesiannetwork(char* train, char* input)
 	for ( int ppp=0 ; ppp<numclass[attributes] ; ppp++)
 	{
 		count[ppp]=count[ppp]/traininstances;
-		cout<<count[ppp]<<" ";
+//		cout<<count[ppp]<<" ";
 	}
-		cout<<endl;
+//		cout<<endl;
 
 
 	classifier(cpt , numclass ,  count , parent, input);
@@ -572,8 +574,6 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 	ifstream testing(input);
 
         if(!testing){cout<<"Can't open training data file!"<<endl;return;}
-
-	testing>>testinstances;    //read the number of testing data
 
 	int *result= new int[testinstances]; //this array store the real result for comparison
 	for(int w=0; w<testinstances; w++)
