@@ -1,9 +1,11 @@
 # Bayesian
 Naive Bayes classifier and Bayesian network classifier C++ implementation
 
+Reference :
+```
 https://en.wikipedia.org/wiki/Naive_Bayes_classifier
 https://en.wikipedia.org/wiki/Bayesian_network
-
+```
 Usage:
 ```
 ./bayesian [training data file] [input test file] [configuration file] [method]
