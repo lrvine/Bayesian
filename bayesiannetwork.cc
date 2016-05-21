@@ -2,11 +2,16 @@
 #include <fstream>
 #include <iomanip>
 #include <cmath>
+#include <queue>
 
 #include "bayesiannetwork.h"
-#include "maxheap.cc"
 
 using namespace std;
+
+struct data_compare 
+{  
+  bool operator()(const data<int> l, const data<int> r)  {  return l.key > r.key;  }  
+};
 
 
 //initialize all the information we need from training data
@@ -257,7 +262,8 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 		relation[ss]=tempo;
 	}
 
-	maxheap<int> *maxweight = new maxheap<int>();
+	priority_queue< data<int>, vector< data<int> >, data_compare  >  maxweight;
+//	maxheap<int> *maxweight = new maxheap<int>();
 	data<int> elen;
 
 	for( int cast=0 ; cast< combinations ; cast++)
@@ -265,7 +271,8 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
           elen.value1 = rank[cast][0];
 		  elen.value2 = rank[cast][1];
           elen.key = relation[cast] ;
-          maxweight->insert(elen);	
+        //maxweight->insert(elen);	
+	  maxweight.push(elen);
 	}
 
 	
@@ -288,7 +295,10 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 
 	for(int combi=0 ; combi < combinations ; combi ++ )
 	{
-		maxweight->deletemax(mmm);
+		if( !maxweight.empty() ){
+			mmm = maxweight.top();
+			maxweight.pop();
+		}
 
 		if( groups[mmm.value1] != 0 && groups[mmm.value2] != 0 && groups[mmm.value1] == groups[mmm.value2] )
 		{}

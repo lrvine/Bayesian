@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-c -g -Wall
-SOURCE=main.cc bayesian.cc naivebayesian.cc bayesiannetwork.cc maxheap.cc
+SOURCE=main.cc bayesian.cc naivebayesian.cc bayesiannetwork.cc
 LDFLAGS=
 OBJECTS= $(SOURCE:.cpp=.o)
 

@@ -9,7 +9,13 @@ public:
 	//initialize all the information we need from training data
 };
 
-
+template<class Type>
+struct data
+{
+	double key;
+	Type value1;
+	Type value2;
+};
 
 
 
