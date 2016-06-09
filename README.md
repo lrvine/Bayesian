@@ -42,4 +42,4 @@ Configuration file format:
 [number of types for attributes 1]   [number of types for attributes 2 ]  .......[ number of classes for prediction result ]  //P.S. For continuous data, the number of types for attributes should be 2.
 ```
 
-Data set is acquired from [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/datasets.html?format=&task=&att=&area=&numAtt=&numIns=&type=&sort=dateUp&view=table)
+Data set is acquired from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
