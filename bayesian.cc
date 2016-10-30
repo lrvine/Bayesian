@@ -1,6 +1,8 @@
 #include "bayesian.h"
 #include <iostream>
 
+
+namespace baysian{
 using std::cout;
 using std::endl;
 
@@ -25,3 +27,5 @@ void bayesian::accuracy(int *outcome , int * result)
 
 	cout<<"accuracy is "<<percentage*100<<"%"<<endl;
 }
+
+}// end of namespace bayesian

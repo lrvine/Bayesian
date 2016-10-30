@@ -1,4 +1,6 @@
 #include "bayesian.h"
+namespace baysian{
+
 class naivebayesian : public bayesian
 {
 protected:
@@ -8,3 +10,5 @@ public:
 	naivebayesian(char*, char*, char*); 
 	//initialize all the information we need from training data
 };
+
+}// end of namespace bayesian

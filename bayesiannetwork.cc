@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace baysian{
+
 struct data_compare 
 {  
   bool operator()(const data<int> l, const data<int> r)  {  return l.key > r.key;  }  
@@ -17,10 +19,10 @@ struct data_compare
 //initialize all the information we need from training data
 bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 {
-	cout<<"Baysiannetwork"<<endl;
-	ifstream configure;
+	std::cout<<"Baysiannetwork"<<std::endl;
+	std::ifstream configure;
         configure.open(cfg);
-        if(!configure){cout<<"! Can't open configuration file!"<<endl;return;}
+        if(!configure){std::cout<<"! Can't open configuration file!"<<std::endl;return;}
     
 	configure>>traininstances>>testinstances>>attributes;// read the number of training instances and attributes
 
@@ -47,12 +49,12 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 		combinations+=com;
 
 
-	//cout<<"combinatinos "<< combinations << endl<<endl; 
+	//std::cout<<"combinatinos "<< combinations << std::endl<<std::endl; 
 
-	ifstream counting;
+	std::ifstream counting;
         counting.open(train);
 
-        if(!counting){cout<<"! Can't open training data file!"<<endl;return;}
+        if(!counting){std::cout<<"! Can't open training data file!"<<std::endl;return;}
 
 	int **rank= new int *[combinations];
 	for(int zz=0 ; zz< combinations ; zz++)   
@@ -357,11 +359,11 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 	for( int atest=0 ; atest< attributes ; atest++)
 	{
 		for( int atest1=0 ; atest1< attributes ; atest1++)
-			cout<<graph[atest][atest1]<<" " ;
+			std::cout<<graph[atest][atest1]<<" " ;
 
-		cout<<endl;
+		std::cout<<std::endl;
 	}
-	cout<<endl;
+	std::cout<<std::endl;
 */
 
 
@@ -396,25 +398,25 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 		
 		transfer[point]=(attributes+1);
 /*
-		cout<<min<<" "<<point<<"   ";
+		std::cout<<min<<" "<<point<<"   ";
 		for( int te=0 ; te< attributes ; te++)
 		{
-			cout<<transfer[te]<<" ";
+			std::cout<<transfer[te]<<" ";
 		}
-		cout<<endl;
+		std::cout<<std::endl;
 */
 	}
-//	cout<<endl;
+//	std::cout<<std::endl;
 
 /*
 	for( int test=0 ; test< attributes ; test++)
 	{
 		for( int test1=0 ; test1< attributes ; test1++)
-			cout<<graph[test][test1]<<" " ;
+			std::cout<<graph[test][test1]<<" " ;
 
-		cout<<endl;
+		std::cout<<std::endl;
 	}
-	cout<<endl;
+	std::cout<<std::endl;
 */
 
 //------------------------------------------------
@@ -483,9 +485,9 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 	}
 
 
-	ifstream training;
+	std::ifstream training;
         training.open(train);
-	if(!training){cout<<"Can't open training data file!"<<endl;return;}  
+	if(!training){std::cout<<"Can't open training data file!"<<std::endl;return;}  
 	
 	double *temp = new double[attributes+1];
 
@@ -549,9 +551,9 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 	for ( int ppp=0 ; ppp<numclass[attributes] ; ppp++)
 	{
 		count[ppp]=count[ppp]/traininstances;
-//		cout<<count[ppp]<<" ";
+//		std::cout<<count[ppp]<<" ";
 	}
-//		cout<<endl;
+//		std::cout<<std::endl;
 
 
 	classifier(cpt , numclass ,  count , parent, input);
@@ -581,9 +583,9 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 //calculate the probability of each choice and choose the greatest one as our prediction
 void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *count ,int **parent,char* input)
 {
-	ifstream testing(input);
+	std::ifstream testing(input);
 
-        if(!testing){cout<<"Can't open training data file!"<<endl;return;}
+        if(!testing){std::cout<<"Can't open training data file!"<<std::endl;return;}
 
 	int *result= new int[testinstances]; //this array store the real result for comparison
 	for(int w=0; w<testinstances; w++)
@@ -659,3 +661,5 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 	delete [] temp;
 	delete [] outcome;
 }
+
+}// end of namespace bayesian

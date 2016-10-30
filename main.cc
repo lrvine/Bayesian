@@ -21,15 +21,15 @@ if( argc >= 5 ){
 	train = argv[1];
 	input = argv[2];
 	cfg = argv[3];
-	cout<<" use default NaiveBayesian method"<<endl;
+	std::cout<<" use default NaiveBayesian method"<<std::endl;
 }else {
-	cout<<" You need to provide training data, test data, and configuration for prediction. Please read README"<<endl;
+	std::cout<<" You need to provide training data, test data, and configuration for prediction. Please read README"<<std::endl;
 }
 
 if( method == 0 ){
-  naivebayesian method0(train, input, cfg);
+	baysian::naivebayesian method0(train, input, cfg);
 }else if( method == 1 ){
-  bayesiannetwork method1(train, input, cfg);
+	baysian::bayesiannetwork method1(train, input, cfg);
 }
 
 return 0;

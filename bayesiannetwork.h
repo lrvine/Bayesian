@@ -1,4 +1,6 @@
 #include "bayesian.h"
+namespace baysian{
+
 class bayesiannetwork: public bayesian
 {
 protected:
@@ -18,4 +20,4 @@ struct data
 };
 
 
-
+}// end of namespace bayesian

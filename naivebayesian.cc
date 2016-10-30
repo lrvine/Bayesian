@@ -5,16 +5,16 @@
 
 #include "naivebayesian.h"
 
-using namespace std;
 
+namespace baysian{
 
 //initialize all the information we need from training data
 naivebayesian::naivebayesian( char * train, char* input ,char* cfg)
 {
-	cout<<"NaiveBayesian"<<endl;
-	ifstream configure;
+	std::cout<<"NaiveBayesian"<<std::endl;
+	std::ifstream configure;
         configure.open(cfg);
-        if(!configure){cout<<"Can't open configuration file!"<<endl;return;}
+        if(!configure){std::cout<<"Can't open configuration file!"<<std::endl;return;}
     
 	configure>>traininstances>>testinstances>>attributes; // read the number of training instances and attributes
 
@@ -36,9 +36,9 @@ naivebayesian::naivebayesian( char * train, char* input ,char* cfg)
 
 	configure.close();
 
-	ifstream training;
+	std::ifstream training;
         training.open(train);
-        if(!training){cout<<"Can't open training data file!"<<endl;return;}
+        if(!training){std::cout<<"Can't open training data file!"<<std::endl;return;}
 
 	//this "protable" store the count of every possible combination 
 	//and divide each of them by the total occurences	
@@ -186,8 +186,8 @@ naivebayesian::naivebayesian( char * train, char* input ,char* cfg)
 //calculate the probability of each choice and choose the greatest one as our prediction
 void naivebayesian::classifier(long double** protable,int*numclass ,double* count ,int *discrete, char* input)
 {
-	ifstream testing(input);
-	if(!testing){cout<<"Can't open training data file!"<<endl;return;}
+	std::ifstream testing(input);
+	if(!testing){std::cout<<"Can't open training data file!"<<std::endl;return;}
 
 
 	int *result= new int[testinstances]; //this array store the real result for comparison
@@ -269,3 +269,5 @@ void naivebayesian::classifier(long double** protable,int*numclass ,double* coun
 	delete [] temp;
 	delete [] outcome;
 }
+
+}// end of namespace bayesian

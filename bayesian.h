@@ -1,5 +1,8 @@
 #ifndef bayesian_h
 #define bayesian_h
+
+namespace baysian{
+
 class bayesian
 {
 protected:
@@ -10,4 +13,6 @@ protected:
 	void accuracy(int * , int * ); // claculate the accuracy
 
 };
+
+}// end of namespace bayesian
 #endif
