@@ -41,8 +41,7 @@ Configuration file format:
 
 [number of types for attributes 1]   [number of types for attributes 2 ]  .......[ number of classes for prediction result ]  
 
-P.S. For continuous data, the number of types for attributes won't matter.
-
+* For continuous data, the "number of types for attributes" won't matter.
 * Bayesian Network DO NOT support continuous data for now.
 ```
 
