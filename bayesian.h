@@ -11,7 +11,6 @@ protected:
 	int attributes;      //store the number of attributes
 	//calculate the probability of each choice and choose the greatest one as our prediction
 	void accuracy(int * , int * ); // claculate the accuracy
-
 };
 
 }// end of namespace bayesian

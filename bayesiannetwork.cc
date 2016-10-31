@@ -3,10 +3,11 @@
 #include <iomanip>
 #include <cmath>
 #include <queue>
+#include <string>
+#include <sstream>
 
 #include "bayesiannetwork.h"
 
-using namespace std;
 
 namespace baysian{
 
@@ -17,11 +18,11 @@ struct data_compare
 
 
 //initialize all the information we need from training data
-bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
+bayesiannetwork::bayesiannetwork(char* train_file, char* test_file, char* cfg_file)
 {
-	std::cout<<"Baysiannetwork"<<std::endl;
+	std::cout<<"Run Baysiannetwork"<<std::endl;
 	std::ifstream configure;
-        configure.open(cfg);
+        configure.open(cfg_file);
         if(!configure){std::cout<<"! Can't open configuration file!"<<std::endl;return;}
     
 	configure>>traininstances>>testinstances>>attributes;// read the number of training instances and attributes
@@ -51,10 +52,10 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 
 	//std::cout<<"combinatinos "<< combinations << std::endl<<std::endl; 
 
-	std::ifstream counting;
-        counting.open(train);
-
-        if(!counting){std::cout<<"! Can't open training data file!"<<std::endl;return;}
+	std::ifstream trainingDataFile;
+	std::string Buf;
+        trainingDataFile.open(train_file);
+        if(!trainingDataFile){std::cout<<"Can't open training data file!"<<std::endl;return;}
 
 	int **rank= new int *[combinations];
 	for(int zz=0 ; zz< combinations ; zz++)   
@@ -112,30 +113,35 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 	}
 
 
-	int *temp0 = new int[attributes+1];
+	int *oneLine = new int[attributes+1];
 
 	for( int ii=1 ; ii<=traininstances; ii++)
 	{
-		for (int bb=0 ; bb<=attributes ; bb++)
-			counting>>temp0[bb];
+		getline( trainingDataFile, Buf );
+		std::stringstream  lineStream(Buf);
+
+		for (int bb=0 ; bb<=attributes ; bb++){
+			getline( lineStream, Buf , ',' );
+			oneLine[bb]=stod(Buf);
+		}
 
 		for (int h=0 ; h< attributes ; h++)
-			ccc[h*numclass[attributes]+temp0[attributes]-1][temp0[h]-1 ]++;
+			ccc[h*numclass[attributes]+oneLine[attributes]-1][oneLine[h]-1 ]++;
 
 		for(int hh=0 ; hh < combinations ; hh++)
 		{
-			aaa[ hh*numclass[attributes]+temp0[attributes]-1 ]
-		    [ (temp0[ rank[hh][0] ]-1)*numclass[rank[hh][1]] + temp0[ rank[hh][1] ]-1 ]++;
+			aaa[ hh*numclass[attributes]+oneLine[attributes]-1 ]
+		    [ (oneLine[ rank[hh][0] ]-1)*numclass[rank[hh][1]] + oneLine[ rank[hh][1] ]-1 ]++;
 
-			bbb[ hh*numclass[attributes]+temp0[attributes]-1 ]
-			[ (temp0[ rank[hh][0] ]-1)*numclass[rank[hh][1]] + temp0[ rank[hh][1] ]-1 ]++;
+			bbb[ hh*numclass[attributes]+oneLine[attributes]-1 ]
+			[ (oneLine[ rank[hh][0] ]-1)*numclass[rank[hh][1]] + oneLine[ rank[hh][1] ]-1 ]++;
 		}
 		
-		count[temp0[attributes] -1 ] ++;
+		count[oneLine[attributes] -1 ] ++;
 	}
 
-	delete [] temp0;
-        counting.close();
+	delete [] oneLine;
+        trainingDataFile.close();
 
 
 
@@ -264,8 +270,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 		relation[ss]=tempo;
 	}
 
-	priority_queue< data<int>, vector< data<int> >, data_compare  >  maxweight;
-//	maxheap<int> *maxweight = new maxheap<int>();
+	std::priority_queue< data<int>, std::vector< data<int> >, data_compare  >  maxweight;
 	data<int> elen;
 
 	for( int cast=0 ; cast< combinations ; cast++)
@@ -273,7 +278,6 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
           elen.value1 = rank[cast][0];
 		  elen.value2 = rank[cast][1];
           elen.key = relation[cast] ;
-        //maxweight->insert(elen);	
 	  maxweight.push(elen);
 	}
 
@@ -397,18 +401,10 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 		}
 		
 		transfer[point]=(attributes+1);
-/*
-		std::cout<<min<<" "<<point<<"   ";
-		for( int te=0 ; te< attributes ; te++)
-		{
-			std::cout<<transfer[te]<<" ";
-		}
-		std::cout<<std::endl;
-*/
 	}
-//	std::cout<<std::endl;
 
 /*
+	std::cout<<std::endl;
 	for( int test=0 ; test< attributes ; test++)
 	{
 		for( int test1=0 ; test1< attributes ; test1++)
@@ -485,17 +481,21 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 	}
 
 
-	std::ifstream training;
-        training.open(train);
-	if(!training){std::cout<<"Can't open training data file!"<<std::endl;return;}  
+        trainingDataFile.open(train_file);
+        if(!trainingDataFile){std::cout<<"Can't open training data file!"<<std::endl;return;}
 	
-	double *temp = new double[attributes+1];
+	double *oneLine_double = new double[attributes+1];
 
 	//store the counts of each possible conjunction into cpt
 	for( int i=1 ; i<=traininstances; i++)
 	{
-		for (int y=0 ; y<=attributes ; y++)
-			training>>temp[y];
+		getline( trainingDataFile, Buf );
+		std::stringstream  lineStream(Buf);
+
+		for (int y=0 ; y<=attributes ; y++){
+			getline( lineStream, Buf , ',' );
+			oneLine_double[y]=stod(Buf);
+		}
 
 		for (int yy=0 ; yy<attributes ;yy++)
 		{
@@ -504,17 +504,17 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 
 			for( int yyy=1 ; yyy<=parent[yy][0] ; yyy++)
 			{
-				reg_add+=(   reg_mul * (static_cast<int>(temp[ parent[yy][yyy] ]) -1) );
+				reg_add+=(   reg_mul * (static_cast<int>(oneLine_double[ parent[yy][yyy] ]) -1) );
 				reg_mul*=numclass[ parent[yy][yyy] ];
 			}
 			
-			cpt[yy][(static_cast<int>(temp[yy])-1)][reg_add]++;
+			cpt[yy][(static_cast<int>(oneLine_double[yy])-1)][reg_add]++;
 		}
 	}
 
 
-	delete [] temp;
-        training.close();
+	delete [] oneLine_double;
+        trainingDataFile.close();
 
     //processing the information in the protalbe to get the proabability of each conjunction
 	for( int t1=0 ; t1< attributes ; t1++)
@@ -556,7 +556,7 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 //		std::cout<<std::endl;
 
 
-	classifier(cpt , numclass ,  count , parent, input);
+	classifier(cpt , numclass ,  count , parent, test_file);
 	//call function for classification
 
 
@@ -581,11 +581,11 @@ bayesiannetwork::bayesiannetwork(char* train, char* input, char* cfg)
 
 
 //calculate the probability of each choice and choose the greatest one as our prediction
-void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *count ,int **parent,char* input)
+void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *count ,int **parent,char* test_file)
 {
-	std::ifstream testing(input);
-
-        if(!testing){std::cout<<"Can't open training data file!"<<std::endl;return;}
+	std::ifstream testInputFile(test_file);
+	if(!testInputFile){std::cout<<"Can't open test data file!"<<std::endl;return;}
+	std::string Buf;
 
 	int *result= new int[testinstances]; //this array store the real result for comparison
 	for(int w=0; w<testinstances; w++)
@@ -599,22 +599,26 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 		outcome[f]=0;
 	}
 
-	double *temp=new double [attributes+1];   //store each instance for processing
+	double *oneLine=new double [attributes+1];   //store each instance for processing
 
 	long double *decision=new long double[numclass[attributes]]; 
 	// store the probability of each choice
 
 	for( int a=0 ; a<testinstances ; a++)
 	{
+		getline( testInputFile , Buf );
+		std::stringstream  lineStream(Buf);
 		//set the array's entries as 1 for each testing instance
 		for ( int m=0 ; m<numclass[attributes]; m++)
 		decision[m]=1;
 
 		// read one instance for prediction
-		for (int u=0 ; u<=attributes; u++)
-			testing>>temp[u];
+		for (int u=0 ; u<=attributes; u++){
+			getline( lineStream, Buf , ',' );
+			oneLine[u]=stod(Buf);
+		}
 
-		result[a]=temp[attributes];
+		result[a]=oneLine[attributes];
 		// store the result
 
 		//calculate each choice's probability
@@ -629,12 +633,12 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 				// the address of our objective is depend on this attribute's parent
 				for( int xxx=1 ; xxx<parent[xx][0] ; xxx++)
 				{
-					reg_add+=(   reg_mul * (static_cast<int>(temp[ parent[xx][xxx] ]) -1) );
+					reg_add+=(   reg_mul * (static_cast<int>(oneLine[ parent[xx][xxx] ]) -1) );
 					reg_mul*=numclass[ parent[xx][xxx] ];					
 				}
 				reg_add+=(reg_mul*x);
 
-				decision[x]*=cpt[xx][static_cast<int>(temp[xx])-1][reg_add];
+				decision[x]*=cpt[xx][static_cast<int>(oneLine[xx])-1][reg_add];
 			}					
 			decision[x]*=count[x];
 		}
@@ -658,7 +662,7 @@ void bayesiannetwork::classifier(long double ***cpt ,int *numclass ,double *coun
 	//release memory
 	delete [] result;
 	delete [] decision;
-	delete [] temp;
+	delete [] oneLine;
 	delete [] outcome;
 }
 

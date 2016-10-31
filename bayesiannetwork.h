@@ -19,5 +19,4 @@ struct data
 	Type value2;
 };
 
-
 }// end of namespace bayesian

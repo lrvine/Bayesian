@@ -26,11 +26,11 @@ Example:
 
 
 
-Training & Test data format:
+Training & Test data are in CSV format:
 ```
-[ attribute 1 of data 1 ]  [ attribute 2 of data 1 ] ........ [ result of data 1 ]
-[ attribute 1 of data 2 ]  [ attribute 2 of data 2 ] ........ [ result of data 2 ]
-[ attribute 1 of data 3 ]  [ attribute 2 of data 3 ] ........ [ result of data 3 ]
+[ attribute 1 of data 1 ],[ attribute 2 of data 1 ], ........ ,[ result of data 1 ]
+[ attribute 1 of data 2 ],[ attribute 2 of data 2 ], ........ ,[ result of data 2 ]
+[ attribute 1 of data 3 ],[ attribute 2 of data 3 ], ........ ,[ result of data 3 ]
 ```
 
 Configuration file format:
@@ -39,7 +39,11 @@ Configuration file format:
 
 [ attribute 1 is discrete(0) or continunous(1) ]   [ attribute 2 is discrete(0) or continunous(1) ]  ......
 
-[number of types for attributes 1]   [number of types for attributes 2 ]  .......[ number of classes for prediction result ]  //P.S. For continuous data, the number of types for attributes should be 2.
+[number of types for attributes 1]   [number of types for attributes 2 ]  .......[ number of classes for prediction result ]  
+
+P.S. For continuous data, the number of types for attributes won't matter.
+
+* Bayesian Network DO NOT support continuous data for now.
 ```
 
 Data set is acquired from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)

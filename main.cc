@@ -27,9 +27,9 @@ if( argc >= 5 ){
 }
 
 if( method == 0 ){
-	baysian::naivebayesian method0(train, input, cfg);
+	baysian::naivebayesian naive(train, input, cfg);
 }else if( method == 1 ){
-	baysian::bayesiannetwork method1(train, input, cfg);
+	baysian::bayesiannetwork bnetwork(train, input, cfg);
 }
 
 return 0;
