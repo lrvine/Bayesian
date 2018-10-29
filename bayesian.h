@@ -5,8 +5,8 @@ namespace baysian {
 
 class bayesian {
  protected:
-  int traininstances;  // store the number of training instances
-  int testinstances;   // store the number of testing instances
+  int trainInstances;  // store the number of training instances
+  int testInstances;   // store the number of testing instances
   int attributes;      // store the number of attributes
   // calculate the probability of each choice and choose the greatest one as our
   // prediction

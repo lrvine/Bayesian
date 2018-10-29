@@ -10,9 +10,9 @@
 namespace baysian {
 
 // initialize all the information we need from training data
-naivebayesian::naivebayesian(char *train_file, char *test_file,
+naiveBayesian::naiveBayesian(char *train_file, char *test_file,
                              char *cfg_file) {
-  std::cout << "Run NaiveBayesian" << std::endl;
+  std::cout << "Run naiveBayesian" << std::endl;
   std::ifstream configure;
   configure.open(cfg_file);
   if (!configure) {
@@ -20,7 +20,7 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
     return;
   }
 
-  configure >> traininstances >> testinstances >>
+  configure >> trainInstances >> testInstances >>
       attributes;  // read the number of training instances and attributes
 
   int *discrete = new int[attributes];
@@ -78,9 +78,9 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
         for (int e = 0; e < numclass[r]; e++) probabilityTable[g][e] = 0;
       }
     } else if (discrete[r] == 0) {
-      for (int gg = (r * numclass[attributes]);
-           gg < (r * numclass[attributes] + numclass[attributes]); gg++) {
-        for (int e = 0; e < 2; e++) probabilityTable[gg][e] = 0;
+      for (int g = (r * numclass[attributes]);
+           g < (r * numclass[attributes] + numclass[attributes]); g++) {
+        for (int e = 0; e < 2; e++) probabilityTable[g][e] = 0;
       }
     }
   }
@@ -89,7 +89,7 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
   double *oneLine = new double[attributes + 1];
 
   // store the information of each instance into probabilityTable
-  for (int i = 1; i <= traininstances; i++) {
+  for (int i = 1; i <= trainInstances; i++) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
 
@@ -100,20 +100,20 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
 
     count[static_cast<int>(oneLine[attributes]) - 1]++;  // count the result
 
-    for (int jj = 0; jj < attributes; jj++) {
-      if (discrete[jj] == 1)  // if this attribute is discrete
+    for (int j = 0; j < attributes; j++) {
+      if (discrete[j] == 1)  // if this attribute is discrete
       {
-        probabilityTable[jj * numclass[attributes] +
+        probabilityTable[j * numclass[attributes] +
                          static_cast<int>(oneLine[attributes]) -
-                         1][static_cast<int>(oneLine[jj]) - 1]++;
-      } else if (discrete[jj] == 0)  // if this attribute is continuous
+                         1][static_cast<int>(oneLine[j]) - 1]++;
+      } else if (discrete[j] == 0)  // if this attribute is continuous
       {
-        probabilityTable[jj * numclass[attributes] +
+        probabilityTable[j * numclass[attributes] +
                          static_cast<int>(oneLine[attributes]) - 1][0] +=
-            oneLine[jj];
-        probabilityTable[jj * numclass[attributes] +
+            oneLine[j];
+        probabilityTable[j * numclass[attributes] +
                          static_cast<int>(oneLine[attributes]) - 1][1] +=
-            pow(oneLine[jj], 2);
+            pow(oneLine[j], 2);
       }
     }
   }
@@ -165,8 +165,8 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
   }
 
   // calculate the probability of each resulting class
-  for (int ppp = 0; ppp < numclass[attributes]; ppp++)
-    count[ppp] = count[ppp] / traininstances;
+  for (int probIndex = 0; probIndex < numclass[attributes]; probIndex++)
+    count[probIndex] = count[probIndex] / trainInstances;
 
   classifier(probabilityTable, numclass, count, discrete, test_file);
   // call function for classification
@@ -183,7 +183,7 @@ naivebayesian::naivebayesian(char *train_file, char *test_file,
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void naivebayesian::classifier(long double **probabilityTable, int *numclass,
+void naiveBayesian::classifier(long double **probabilityTable, int *numclass,
                                double *count, int *discrete, char *test_file) {
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
@@ -193,14 +193,14 @@ void naivebayesian::classifier(long double **probabilityTable, int *numclass,
 
   std::string Buf;
 
-  int *result = new int[testinstances];  // this array store the real result for
+  int *result = new int[testInstances];  // this array store the real result for
                                          // comparison
-  for (int w = 0; w < testinstances; w++) {
+  for (int w = 0; w < testInstances; w++) {
     result[w] = 0;
   }
 
-  int *outcome = new int[testinstances];  // this array store our prediciton
-  for (int f = 0; f < testinstances; f++) {
+  int *outcome = new int[testInstances];  // this array store our prediciton
+  for (int f = 0; f < testInstances; f++) {
     outcome[f] = 0;
   }
 
@@ -210,7 +210,7 @@ void naivebayesian::classifier(long double **probabilityTable, int *numclass,
   long double *decision = new long double[numclass[attributes]];
   // store the probability of each choice
 
-  for (int a = 0; a < testinstances; a++) {
+  for (int a = 0; a < testInstances; a++) {
     for (int m = 0; m < numclass[attributes]; m++) decision[m] = 1;
     // set the array's entries as 1 for each testing instance
 

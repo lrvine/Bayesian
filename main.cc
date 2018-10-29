@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     train = argv[1];
     input = argv[2];
     cfg = argv[3];
-    std::cout << " use default NaiveBayesian method" << std::endl;
+    std::cout << " use default naiveBayesian method" << std::endl;
   } else {
     std::cout << " You need to provide training data, test data, and "
                  "configuration for prediction. Please read README"
@@ -28,9 +28,9 @@ int main(int argc, char **argv) {
   }
 
   if (method == 0) {
-    baysian::naivebayesian naive(train, input, cfg);
+    baysian::naiveBayesian naive(train, input, cfg);
   } else if (method == 1) {
-    baysian::bayesiannetwork bnetwork(train, input, cfg);
+    baysian::bayesianNetwork bnetwork(train, input, cfg);
   }
 
   return 0;
