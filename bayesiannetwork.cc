@@ -465,7 +465,7 @@ bayesianNetwork::bayesianNetwork(char *train_file, char *test_file,
 #endif
   }
 
-  classifier(cpt, numclass, count, parent, test_file);
+  predict(cpt, numclass, count, parent, test_file);
   // call function for classification
 
   // release the memory
@@ -483,10 +483,13 @@ bayesianNetwork::bayesianNetwork(char *train_file, char *test_file,
   delete[] count;
 }
 
+// Will migrate old predict function to this format
+void bayesianNetwork::predict(char *test_file) {}
+
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void bayesianNetwork::classifier(long double ***cpt, int *numclass,
-                                 double *count, int **parent, char *test_file) {
+void bayesianNetwork::predict(long double ***cpt, int *numclass, double *count,
+                              int **parent, char *test_file) {
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
     std::cout << "Can't open test data file!" << std::endl;

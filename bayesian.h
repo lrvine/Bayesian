@@ -11,6 +11,8 @@ class bayesian {
   // calculate the probability of each choice and choose the greatest one as our
   // prediction
   void accuracy(int *, int *);  // claculate the accuracy
+ public:
+  virtual void predict(char *) = 0;
 };
 
 }  // namespace baysian
