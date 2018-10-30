@@ -32,14 +32,13 @@ bayesianNetwork::bayesianNetwork(char *cfg_file) {
   // TODO : implement handling continuous data. This is just a placeholder
   discrete = new int[attributes];
   // this array store the information about each attribute is continuous or not
-  for (int idx = 0; idx < attributes;
-       idx++)  //  read the information about continuous or not
-    configure >> discrete[idx];
+  for (int idx = 0; idx < attributes; idx++) configure >> discrete[idx];
+  //  read the information about continuous or not
 
   classNum = new int[attributes + 1];
   // this array store the number of classes of each attribute
-  for (int idx = 0; idx <= attributes; idx++)  // read the number of classes
-    configure >> classNum[idx];
+  for (int idx = 0; idx <= attributes; idx++) configure >> classNum[idx];
+  // read the number of classes
 
   outputClassNum = classNum[attributes];  // the number of output classes
   classCount = new double[outputClassNum];
@@ -380,21 +379,20 @@ void bayesianNetwork::train(char *train_file) {
   // the last two dimention is the "conditional probability table"
   // for each attribute
   cpt = new long double **[attributes];
-  for (int j = 0; j < attributes; j++) {
-    cpt[j] = new long double *[classNum[j]];
+  for (int j1 = 0; j1 < attributes; j1++) {
+    cpt[j1] = new long double *[classNum[j1]];
 
     // calculate the appropriate length of the third dimention
     int reg = 1;
-    for (int jjj = 1; jjj <= parent[j][0]; jjj++)
-      reg *= classNum[parent[j][jjj]];
+    for (int j2 = 1; j2 <= parent[j1][0]; j2++) reg *= classNum[parent[j1][j2]];
 
-    for (int jj = 0; jj < classNum[j]; jj++) {
-      cpt[j][jj] = new long double[reg + 1];
+    for (int j3 = 0; j3 < classNum[j1]; j3++) {
+      cpt[j1][j3] = new long double[reg + 1];
 
-      cpt[j][jj][0] = reg;
+      cpt[j1][j3][0] = reg;
 
-      for (int jjjj = 1; jjjj <= reg; jjjj++)  // initialize to zero
-        cpt[j][jj][jjjj] = 0;
+      for (int j4 = 1; j4 <= reg; j4++)  // initialize to zero
+        cpt[j1][j3][j4] = 0;
     }
   }
 
