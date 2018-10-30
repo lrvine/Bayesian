@@ -4,10 +4,6 @@ namespace baysian {
 class bayesianNetwork : public bayesian {
  private:
   long double ***cpt;
-  double *classCount;  // this array store the total number of each
-                       // decision's class in training data
-  int *discrete;
-  int *classNum;  // this array store the number of classes of each attribute
   int **parent;
 
  public:
