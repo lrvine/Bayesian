@@ -186,7 +186,7 @@ void naiveBayesian::predict(char *test_file) {
     std::cout << "Can't open test data file!" << std::endl;
     return;
   }
-  std::cout << " start of prediction " << std::endl;
+  std::cout << "Start prediction " << std::endl;
   std::string Buf;
 
   int *result = new int[testInstances];  // this array store the real result for
