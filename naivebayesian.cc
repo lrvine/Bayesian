@@ -11,35 +11,20 @@ namespace baysian {
 // initialize all the information we need from training data
 naiveBayesian::naiveBayesian(char *cfg_file) {
   std::cout << "Run naiveBayesian" << std::endl;
-  std::ifstream configure;
-  configure.open(cfg_file);
-  if (!configure) {
-    std::cout << "Can't open configuration file!" << std::endl;
-    return;
-  }
+  parse_configuration(cfg_file);
+}
 
-  configure >> trainInstances >> testInstances >> attributes;
-  // read the number of training instances and attributes
-
-  discrete = new int[attributes];
-  // this array store the information about each attribute is continuous or not
-  for (int z = 0; z < attributes;
-       z++)  //  read the information about continuous or not
-    configure >> discrete[z];
-  classNum = new int[attributes + 1];
-  // this array store the number of classes of each attribute
-  for (int b = 0; b <= attributes; b++) {  // read the number of classes
-    configure >> classNum[b];
-    if (discrete[b])  // set classNum as 2 for continuous data
-      classNum[b] = 2;
-  }
-
-  outputClassNum = classNum[attributes];
-  classCount = new double[outputClassNum];
-  // this array store the total number of each decision's class in training data
-  for (int c = 0; c < outputClassNum; c++) classCount[c] = 0;
-
-  configure.close();
+naiveBayesian::~naiveBayesian() {
+  // release the memory
+#ifdef DEBUG
+  std::cout << " release memory " << std::endl;
+#endif
+  for (int x = 0; x < (attributes * outputClassNum); x++)
+    delete[] probabilityTable[x];
+  delete[] probabilityTable;
+  delete[] discrete;
+  delete[] classNum;
+  delete[] classCount;
 }
 
 void naiveBayesian::train(char *train_file) {
@@ -165,19 +150,6 @@ void naiveBayesian::train(char *train_file) {
   // calculate the probability of each resulting class
   for (int probIndex = 0; probIndex < outputClassNum; probIndex++)
     classCount[probIndex] = classCount[probIndex] / trainInstances;
-}
-
-naiveBayesian::~naiveBayesian() {
-  // release the memory
-#ifdef DEBUG
-  std::cout << " release memory " << std::endl;
-#endif
-  for (int x = 0; x < (attributes * outputClassNum); x++)
-    delete[] probabilityTable[x];
-  delete[] probabilityTable;
-  delete[] discrete;
-  delete[] classNum;
-  delete[] classCount;
 }
 
 // calculate the probability of each choice and choose the greatest one as our

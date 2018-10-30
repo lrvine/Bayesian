@@ -19,33 +19,27 @@ struct data_compare {
 // initialize all the information we need from training data
 bayesianNetwork::bayesianNetwork(char *cfg_file) {
   std::cout << "Run Baysiannetwork" << std::endl;
-  std::ifstream configure;
-  configure.open(cfg_file);
-  if (!configure) {
-    std::cout << "! Can't open configuration file!" << std::endl;
-    return;
+  parse_configuration(cfg_file);
+}
+
+bayesianNetwork::~bayesianNetwork() {
+  // release the memory
+#ifdef DEBUG
+  std::cout << " release memory " << std::endl;
+#endif
+
+  for (int x1 = 0; x1 < attributes; x1++) {
+    for (int x2 = 0; x2 < classNum[x1]; x2++) delete[] cpt[x1][x2];
+    delete[] cpt[x1];
   }
 
-  configure >> trainInstances >> testInstances >>
-      attributes;  // read the number of training instances and attributes
+  for (int pa = 0; pa < attributes; pa++) delete[] parent[pa];
 
-  // TODO : implement handling continuous data. This is just a placeholder
-  discrete = new int[attributes];
-  // this array store the information about each attribute is continuous or not
-  for (int idx = 0; idx < attributes; idx++) configure >> discrete[idx];
-  //  read the information about continuous or not
-
-  classNum = new int[attributes + 1];
-  // this array store the number of classes of each attribute
-  for (int idx = 0; idx <= attributes; idx++) configure >> classNum[idx];
-  // read the number of classes
-
-  outputClassNum = classNum[attributes];  // the number of output classes
-  classCount = new double[outputClassNum];
-  // this array store the total number of each decision's class in training data
-  for (int c = 0; c < outputClassNum; c++) classCount[c] = 0;
-
-  configure.close();
+  delete[] parent;
+  delete[] cpt;
+  delete[] classNum;
+  delete[] discrete;
+  delete[] classCount;
 }
 
 void bayesianNetwork::train(char *train_file) {
@@ -462,26 +456,6 @@ void bayesianNetwork::train(char *train_file) {
     std::cout << classCount[p] << " ";
 #endif
   }
-}
-
-bayesianNetwork::~bayesianNetwork() {
-  // release the memory
-#ifdef DEBUG
-  std::cout << " release memory " << std::endl;
-#endif
-
-  for (int x1 = 0; x1 < attributes; x1++) {
-    for (int x2 = 0; x2 < classNum[x1]; x2++) delete[] cpt[x1][x2];
-    delete[] cpt[x1];
-  }
-
-  for (int pa = 0; pa < attributes; pa++) delete[] parent[pa];
-
-  delete[] parent;
-  delete[] cpt;
-  delete[] classNum;
-  delete[] discrete;
-  delete[] classCount;
 }
 
 // calculate the probability of each choice and choose the greatest one as our

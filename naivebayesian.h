@@ -9,8 +9,8 @@ class naiveBayesian : public bayesian {
  public:
   void train(char *);
   void predict(char *);
-  // calculate the probability of each choice and choose the greatest one as our
-  // prediction
+  // calculate the probability of each choice
+  // and choose the greatest one as our prediction
   naiveBayesian(char *);
   // initialize all the information we need from training data
   ~naiveBayesian();

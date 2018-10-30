@@ -16,11 +16,13 @@ class bayesian {
   int outputClassNum;  // the number of output classes
 
   void accuracy(int *, int *);  // claculate the accuracy
+  void parse_configuration(char *);
+
  public:
-  virtual void predict(char *) = 0;
-  // calculate the probability of each choice and choose the greatest one as our
-  // prediction
   virtual void train(char *) = 0;
+  virtual void predict(char *) = 0;
+  // calculate the probability of each choice
+  // and choose the greatest one as our prediction
 };
 
 }  // namespace baysian
