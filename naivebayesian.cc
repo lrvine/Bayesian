@@ -9,7 +9,7 @@
 namespace baysian {
 
 // initialize all the information we need from training data
-naiveBayesian::naiveBayesian(char *train_file, char *cfg_file) {
+naiveBayesian::naiveBayesian(char *cfg_file) {
   std::cout << "Run naiveBayesian" << std::endl;
   std::ifstream configure;
   configure.open(cfg_file);
@@ -40,7 +40,9 @@ naiveBayesian::naiveBayesian(char *train_file, char *cfg_file) {
   for (int c = 0; c < outputClassNum; c++) classCount[c] = 0;
 
   configure.close();
+}
 
+void naiveBayesian::train(char *train_file) {
   std::ifstream trainingDataFile;
   std::string Buf;
   trainingDataFile.open(train_file);

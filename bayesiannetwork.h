@@ -9,6 +9,7 @@ class bayesianNetwork : public bayesian {
   // calculate the probability of each choice and choose the greatest one as our
   // prediction
   void predict(char *);
+  void train(char *);
 };
 
 template <class Type>

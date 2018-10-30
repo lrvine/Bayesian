@@ -484,6 +484,8 @@ bayesianNetwork::bayesianNetwork(char *train_file, char *test_file,
 }
 
 // Will migrate old predict function to this format
+void bayesianNetwork::train(char *test_file) {}
+// Will migrate old predict function to this format
 void bayesianNetwork::predict(char *test_file) {}
 
 // calculate the probability of each choice and choose the greatest one as our

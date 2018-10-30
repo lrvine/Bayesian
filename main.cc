@@ -32,7 +32,8 @@ int main(int argc, char **argv) {
   }
   begin = clock();
   if (method == 0) {
-    baysian::naiveBayesian naive(train, cfg);
+    baysian::naiveBayesian naive(cfg);
+    naive.train(train);
     naive.predict(input);  // call function to do prediction
   } else if (method == 1) {
     baysian::bayesianNetwork bnetwork(train, input, cfg);

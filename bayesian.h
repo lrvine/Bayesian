@@ -13,6 +13,7 @@ class bayesian {
   void accuracy(int *, int *);  // claculate the accuracy
  public:
   virtual void predict(char *) = 0;
+  virtual void train(char *) = 0;
 };
 
 }  // namespace baysian
