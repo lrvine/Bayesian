@@ -36,7 +36,9 @@ int main(int argc, char **argv) {
     naive.train(train);
     naive.predict(input);  // call function to do prediction
   } else if (method == 1) {
-    baysian::bayesianNetwork bnetwork(train, input, cfg);
+    baysian::bayesianNetwork bnetwork(cfg);
+    bnetwork.train(train);
+    bnetwork.predict(input);
   }
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
