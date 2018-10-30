@@ -496,10 +496,10 @@ void bayesianNetwork::predict(char *test_file) {
   }
   std::string Buf;
 
-  int *result = new int[testInstances];  // this array store the real result for
-                                         // comparison
+  int *truth = new int[testInstances];  // this array store the real result for
+                                        // comparison
   for (int w = 0; w < testInstances; w++) {
-    result[w] = 0;
+    truth[w] = 0;
   }
 
   int *outcome = new int[testInstances];  // this array store our prediciton
@@ -525,8 +525,8 @@ void bayesianNetwork::predict(char *test_file) {
       oneLine[u] = stod(Buf);
     }
 
-    result[a] = oneLine[attributes];
-    // store the result
+    truth[a] = oneLine[attributes];
+    // store the truth
 
     // calculate each choice's probability
     for (int x1 = 0; x1 < outputClassNum; x1++) {
@@ -558,11 +558,11 @@ void bayesianNetwork::predict(char *test_file) {
     }
     outcome[a] = (big + 1);
   }
-  accuracy(outcome, result);
+  accuracy(outcome, truth);
   // call function "accuracy" to calculate the accuracy
 
   // release memory
-  delete[] result;
+  delete[] truth;
   delete[] decision;
   delete[] oneLine;
   delete[] outcome;

@@ -4,14 +4,15 @@
 namespace baysian {
 
 // calculate the accuracy
-void bayesian::accuracy(int *outcome, int *result) {
+void bayesian::accuracy(int *outcome, int *truth) {
   double correct = 0;  // store the number of correct predictions
 
-  for (int i = 0; i < testInstances; i++)  // count the number of correct predictions
+  for (int i = 0; i < testInstances; i++)
+  // count the number of correct predictions
   {
-    if (outcome[i] == result[i]) correct++;
+    if (outcome[i] == truth[i]) correct++;
 #ifdef DEBUG
-    std::cout << "predict to be " << outcome[i] << " is actually " << result[i]
+    std::cout << "predict to be " << outcome[i] << " is actually " << truth[i]
               << std::endl;
 #endif
   }

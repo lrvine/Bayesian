@@ -191,10 +191,10 @@ void naiveBayesian::predict(char *test_file) {
   std::cout << "Start prediction " << std::endl;
   std::string Buf;
 
-  int *result = new int[testInstances];  // this array store the real result for
-                                         // comparison
+  int *truth = new int[testInstances];  // this array store the real result for
+                                        // comparison
   for (int w = 0; w < testInstances; w++) {
-    result[w] = 0;
+    truth[w] = 0;
   }
 
   int *outcome = new int[testInstances];  // this array store our prediciton
@@ -220,8 +220,8 @@ void naiveBayesian::predict(char *test_file) {
     // read one instance for prediction
 
     getline(lineStream, Buf, ',');
-    result[a] = stod(Buf);
-    // store the result
+    truth[a] = stod(Buf);
+    // store the truth
     for (int x = 0; x < classNum[attributes]; x++) {
       for (int j = 0; j < attributes; j++) {
         if (discrete[j] == 1)  // if this attribute is discrete
@@ -260,11 +260,11 @@ void naiveBayesian::predict(char *test_file) {
     }
     outcome[a] = (big + 1);
   }
-  accuracy(outcome, result);
+  accuracy(outcome, truth);
   // call function "caauracy" to calculate the accuracy
 
   // release memory
-  delete[] result;
+  delete[] truth;
   delete[] decision;
   delete[] oneLine;
   delete[] outcome;
