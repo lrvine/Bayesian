@@ -32,13 +32,13 @@ int main(int argc, char **argv) {
   }
   begin = clock();
   if (method == 0) {
-    baysian::naiveBayesian naive(cfg);
-    naive.train(train);
-    naive.predict(input);  // call function to do prediction
+    baysian::NaiveBayesian naive(cfg);
+    naive.Train(train);
+    naive.Predict(input);  // call function to do prediction
   } else if (method == 1) {
-    baysian::bayesianNetwork bnetwork(cfg);
-    bnetwork.train(train);
-    bnetwork.predict(input);
+    baysian::BayesianNetwork bnetwork(cfg);
+    bnetwork.Train(train);
+    bnetwork.Predict(input);
   }
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

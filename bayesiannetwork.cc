@@ -19,7 +19,7 @@ struct data_compare {
 // initialize all the information we need from training data
 BayesianNetwork::BayesianNetwork(char *cfg_file) {
   std::cout << "Run Baysiannetwork" << std::endl;
-  parse_configuration(cfg_file);
+  ParseConfiguration(cfg_file);
 }
 
 BayesianNetwork::~BayesianNetwork() {
@@ -28,23 +28,24 @@ BayesianNetwork::~BayesianNetwork() {
   std::cout << " release memory " << std::endl;
 #endif
 
-  for (int x1 = 0; x1 < attributes; x1++) {
-    for (int x2 = 0; x2 < classNum[x1]; x2++) delete[] cpt[x1][x2];
+  for (int x1 = 0; x1 < num_attributes_; x1++) {
+    for (int x2 = 0; x2 < num_class_for_each_attribute_[x1]; x2++)
+      delete[] cpt[x1][x2];
     delete[] cpt[x1];
   }
 
-  for (int pa = 0; pa < attributes; pa++) delete[] parent[pa];
+  for (int pa = 0; pa < num_attributes_; pa++) delete[] parent[pa];
 
   delete[] parent;
   delete[] cpt;
-  delete[] classNum;
-  delete[] discrete;
-  delete[] classCount;
+  delete[] num_class_for_each_attribute_;
+  delete[] is_discrete_;
+  delete[] num_class_for_each_attributes_;
 }
 
-void BayesianNetwork::train(char *train_file) {
+void BayesianNetwork::Train(char *train_file) {
   int combinations = 1;
-  for (int com = (attributes - 1); com > 1; com--) combinations += com;
+  for (int com = (num_attributes_ - 1); com > 1; com--) combinations += com;
 
 #ifdef DEBUG
   std::cout << "combinatinos " << combinations << std::endl << std::endl;
@@ -61,143 +62,172 @@ void BayesianNetwork::train(char *train_file) {
   int **rank = new int *[combinations];
   for (int idx = 0; idx < combinations; idx++) rank[idx] = new int[2];
   int index = 0;
-  for (int z = 0; z < (attributes - 1); z++) {
-    for (int p = 1; p <= (attributes - z - 1); p++) {
+  for (int z = 0; z < (num_attributes_ - 1); z++) {
+    for (int p = 1; p <= (num_attributes_ - z - 1); p++) {
       rank[index][0] = z;
       rank[index][1] = (z + p);
       index++;
     }
   }
 
-  double **ccc = new double *[attributes * outputClassNum];
-  for (int f = 0; f < attributes; f++) {
-    for (int f1 = (f * classNum[attributes]);
-         f1 < ((f + 1) * classNum[attributes]); f1++)
-      ccc[f1] = new double[classNum[f]];
+  double **ccc = new double *[num_attributes_ * num_output_class_];
+  for (int f = 0; f < num_attributes_; f++) {
+    for (int f1 = (f * num_class_for_each_attribute_[num_attributes_]);
+         f1 < ((f + 1) * num_class_for_each_attribute_[num_attributes_]); f1++)
+      ccc[f1] = new double[num_class_for_each_attribute_[f]];
   }
-  for (int f2 = 0; f2 < attributes; f2++) {
-    for (int f3 = (f2 * classNum[attributes]);
-         f3 < ((f2 + 1) * classNum[attributes]); f3++) {
-      for (int f4 = 0; f4 < classNum[f2]; f4++) ccc[f3][f4] = 0;
+  for (int f2 = 0; f2 < num_attributes_; f2++) {
+    for (int f3 = (f2 * num_class_for_each_attribute_[num_attributes_]);
+         f3 < ((f2 + 1) * num_class_for_each_attribute_[num_attributes_]);
+         f3++) {
+      for (int f4 = 0; f4 < num_class_for_each_attribute_[f2]; f4++)
+        ccc[f3][f4] = 0;
     }
   }
 
-  double **aaa = new double *[combinations * outputClassNum];
+  double **aaa = new double *[combinations * num_output_class_];
   for (int f = 0; f < combinations; f++) {
-    for (int f1 = (f * outputClassNum); f1 < ((f + 1) * outputClassNum); f1++) {
-      aaa[f1] = new double[classNum[rank[f][0]] * classNum[rank[f][1]]];
+    for (int f1 = (f * num_output_class_); f1 < ((f + 1) * num_output_class_);
+         f1++) {
+      aaa[f1] = new double[num_class_for_each_attribute_[rank[f][0]] *
+                           num_class_for_each_attribute_[rank[f][1]]];
 
-      for (int f2 = 0; f2 < classNum[rank[f][0]] * classNum[rank[f][1]]; f2++)
+      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f][0]] *
+                                num_class_for_each_attribute_[rank[f][1]];
+           f2++)
         aaa[f1][f2] = 0;
     }
   }
 
-  double **bbb = new double *[combinations * outputClassNum];
+  double **bbb = new double *[combinations * num_output_class_];
   for (int f = 0; f < combinations; f++) {
-    for (int f1 = (f * outputClassNum); f1 < ((f + 1) * outputClassNum); f1++) {
-      bbb[f1] = new double[classNum[rank[f][0]] * classNum[rank[f][1]]];
+    for (int f1 = (f * num_output_class_); f1 < ((f + 1) * num_output_class_);
+         f1++) {
+      bbb[f1] = new double[num_class_for_each_attribute_[rank[f][0]] *
+                           num_class_for_each_attribute_[rank[f][1]]];
 
-      for (int f2 = 0; f2 < classNum[rank[f][0]] * classNum[rank[f][1]]; f2++)
+      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f][0]] *
+                                num_class_for_each_attribute_[rank[f][1]];
+           f2++)
         bbb[f1][f2] = 0;
     }
   }
 
-  int *oneLine = new int[attributes + 1];
+  int *oneLine = new int[num_attributes_ + 1];
 
-  for (int i = 1; i <= trainInstances; i++) {
+  for (int i = 1; i <= num_train_instances_; i++) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
 
-    for (int b = 0; b <= attributes; b++) {
+    for (int b = 0; b <= num_attributes_; b++) {
       getline(lineStream, Buf, ',');
       oneLine[b] = stod(Buf);
     }
 
-    for (int h = 0; h < attributes; h++)
-      ccc[h * classNum[attributes] + oneLine[attributes] - 1][oneLine[h] - 1]++;
+    for (int h = 0; h < num_attributes_; h++)
+      ccc[h * num_class_for_each_attribute_[num_attributes_] +
+          oneLine[num_attributes_] - 1][oneLine[h] - 1]++;
 
     for (int h = 0; h < combinations; h++) {
-      aaa[h * outputClassNum + oneLine[attributes] - 1]
-         [(oneLine[rank[h][0]] - 1) * classNum[rank[h][1]] +
+      aaa[h * num_output_class_ + oneLine[num_attributes_] - 1]
+         [(oneLine[rank[h][0]] - 1) *
+              num_class_for_each_attribute_[rank[h][1]] +
           oneLine[rank[h][1]] - 1]++;
 
-      bbb[h * outputClassNum + oneLine[attributes] - 1]
-         [(oneLine[rank[h][0]] - 1) * classNum[rank[h][1]] +
+      bbb[h * num_output_class_ + oneLine[num_attributes_] - 1]
+         [(oneLine[rank[h][0]] - 1) *
+              num_class_for_each_attribute_[rank[h][1]] +
           oneLine[rank[h][1]] - 1]++;
     }
 
-    classCount[oneLine[attributes] - 1]++;
+    num_class_for_each_attributes_[oneLine[num_attributes_] - 1]++;
   }
 
   delete[] oneLine;
   trainingDataFile.close();
 
-  for (int t = 0; t < attributes; t++) {
-    for (int d = 0; d < classNum[attributes]; d++) {
+  for (int t = 0; t < num_attributes_; t++) {
+    for (int d = 0; d < num_class_for_each_attribute_[num_attributes_]; d++) {
       int correction = 0;
 
-      for (int o = 0; o < classNum[t]; o++) {
-        if (ccc[(t * classNum[attributes] + d)][o] == 0) {
-          correction = classNum[t];
-          for (int p = 0; p < classNum[t]; p++) {
-            ccc[(t * classNum[attributes] + d)][p]++;
+      for (int o = 0; o < num_class_for_each_attribute_[t]; o++) {
+        if (ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][o] ==
+            0) {
+          correction = num_class_for_each_attribute_[t];
+          for (int p = 0; p < num_class_for_each_attribute_[t]; p++) {
+            ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][p]++;
           }
           break;
         }
       }
 
-      for (int w = 0; w < classNum[t]; w++)
-        ccc[(t * classNum[attributes] + d)][w] /= (classCount[d] + correction);
+      for (int w = 0; w < num_class_for_each_attribute_[t]; w++)
+        ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][w] /=
+            (num_class_for_each_attributes_[d] + correction);
     }
   }
 
   for (int i = 0; i < combinations; i++) {
     int correction1 = 0;
 
-    for (int d = 0; d < outputClassNum; d++) {
-      for (int o = 0; o < classNum[rank[i][0]] * classNum[rank[i][1]]; o++) {
-        if (aaa[i * outputClassNum + d][o] == 0) {
-          for (int p = 0; p < outputClassNum; p++) {
-            for (int q = 0; q < classNum[rank[i][0]] * classNum[rank[i][1]];
+    for (int d = 0; d < num_output_class_; d++) {
+      for (int o = 0; o < num_class_for_each_attribute_[rank[i][0]] *
+                              num_class_for_each_attribute_[rank[i][1]];
+           o++) {
+        if (aaa[i * num_output_class_ + d][o] == 0) {
+          for (int p = 0; p < num_output_class_; p++) {
+            for (int q = 0; q < num_class_for_each_attribute_[rank[i][0]] *
+                                    num_class_for_each_attribute_[rank[i][1]];
                  q++) {
-              aaa[i * outputClassNum + p][q]++;
+              aaa[i * num_output_class_ + p][q]++;
             }
           }
 
-          correction1 =
-              outputClassNum * classNum[rank[i][0]] * classNum[rank[i][1]];
+          correction1 = num_output_class_ *
+                        num_class_for_each_attribute_[rank[i][0]] *
+                        num_class_for_each_attribute_[rank[i][1]];
 
           break;
         }
       }
     }
 
-    for (int w1 = 0; w1 < outputClassNum; w1++) {
-      for (int w2 = 0; w2 < classNum[rank[i][0]] * classNum[rank[i][1]]; w2++) {
-        aaa[i * outputClassNum + w1][w2] /= (trainInstances + correction1);
+    for (int w1 = 0; w1 < num_output_class_; w1++) {
+      for (int w2 = 0; w2 < num_class_for_each_attribute_[rank[i][0]] *
+                                num_class_for_each_attribute_[rank[i][1]];
+           w2++) {
+        aaa[i * num_output_class_ + w1][w2] /=
+            (num_train_instances_ + correction1);
       }
     }
   }
 
   for (int t = 0; t < combinations; t++) {
-    for (int d = 0; d < outputClassNum; d++) {
+    for (int d = 0; d < num_output_class_; d++) {
       int correction2 = 0;
 
-      for (int o = 0; o < classNum[rank[t][0]] * classNum[rank[t][1]]; o++) {
-        if (bbb[t * outputClassNum + d][o] == 0) {
-          for (int p = 0; p < classNum[rank[t][0]] * classNum[rank[t][1]];
+      for (int o = 0; o < num_class_for_each_attribute_[rank[t][0]] *
+                              num_class_for_each_attribute_[rank[t][1]];
+           o++) {
+        if (bbb[t * num_output_class_ + d][o] == 0) {
+          for (int p = 0; p < num_class_for_each_attribute_[rank[t][0]] *
+                                  num_class_for_each_attribute_[rank[t][1]];
                p++) {
-            bbb[t * outputClassNum + d][p]++;
+            bbb[t * num_output_class_ + d][p]++;
           }
 
-          correction2 = classNum[rank[t][0]] * classNum[rank[t][1]];
+          correction2 = num_class_for_each_attribute_[rank[t][0]] *
+                        num_class_for_each_attribute_[rank[t][1]];
 
           break;
         }
       }
 
-      for (int w2 = 0; w2 < classNum[rank[t][0]] * classNum[rank[t][1]]; w2++)
-        bbb[t * outputClassNum + d][w2] /= (classCount[d] + correction2);
+      for (int w2 = 0; w2 < num_class_for_each_attribute_[rank[t][0]] *
+                                num_class_for_each_attribute_[rank[t][1]];
+           w2++)
+        bbb[t * num_output_class_ + d][w2] /=
+            (num_class_for_each_attributes_[d] + correction2);
     }
   }
 
@@ -206,15 +236,17 @@ void BayesianNetwork::train(char *train_file) {
   for (int s0 = 0; s0 < combinations; s0++) {
     double tempo = 0;
 
-    for (int s1 = 0; s1 < outputClassNum; s1++) {
-      for (int s2 = 0; s2 < classNum[rank[s0][0]]; s2++) {
-        for (int s3 = 0; s3 < classNum[rank[s0][1]]; s3++) {
+    for (int s1 = 0; s1 < num_output_class_; s1++) {
+      for (int s2 = 0; s2 < num_class_for_each_attribute_[rank[s0][0]]; s2++) {
+        for (int s3 = 0; s3 < num_class_for_each_attribute_[rank[s0][1]];
+             s3++) {
           tempo +=
-              (aaa[s0 * outputClassNum + s1][s2 * classNum[rank[s0][1]] + s3] *
-               log10(bbb[s0 * outputClassNum + s1]
-                        [s2 * classNum[rank[s0][1]] + s3] /
-                     (ccc[rank[s0][0] * outputClassNum + s1][s2] *
-                      ccc[rank[s0][1] * outputClassNum + s1][s3])));
+              (aaa[s0 * num_output_class_ + s1]
+                  [s2 * num_class_for_each_attribute_[rank[s0][1]] + s3] *
+               log10(bbb[s0 * num_output_class_ + s1]
+                        [s2 * num_class_for_each_attribute_[rank[s0][1]] + s3] /
+                     (ccc[rank[s0][0] * num_output_class_ + s1][s2] *
+                      ccc[rank[s0][1] * num_output_class_ + s1][s3])));
         }
       }
     }
@@ -232,14 +264,15 @@ void BayesianNetwork::train(char *train_file) {
     maxweight.push(elen);
   }
 
-  int *groups = new int[attributes];
-  for (int v = 0; v < attributes; v++) groups[v] = 0;
+  int *groups = new int[num_attributes_];
+  for (int v = 0; v < num_attributes_; v++) groups[v] = 0;
 
-  int **graph = new int *[attributes];
-  for (int zz1 = 0; zz1 < attributes; zz1++) graph[zz1] = new int[attributes];
+  int **graph = new int *[num_attributes_];
+  for (int zz1 = 0; zz1 < num_attributes_; zz1++)
+    graph[zz1] = new int[num_attributes_];
 
-  for (int k1 = 0; k1 < attributes; k1++) {
-    for (int kk1 = 0; kk1 < attributes; kk1++) graph[k1][kk1] = 0;
+  for (int k1 = 0; k1 < num_attributes_; k1++) {
+    for (int kk1 = 0; kk1 < num_attributes_; kk1++) graph[k1][kk1] = 0;
   }
 
   data<int> mmm;
@@ -283,7 +316,7 @@ void BayesianNetwork::train(char *train_file) {
         slave = groups[mmm.value1];
       }
 
-      for (int scan = 0; scan < attributes; scan++) {
+      for (int scan = 0; scan < num_attributes_; scan++) {
         if (groups[scan] == slave) {
           groups[scan] = boss;
         }
@@ -295,44 +328,44 @@ void BayesianNetwork::train(char *train_file) {
   }
 
 #ifdef DEBUG
-  for (int atest = 0; atest < attributes; atest++) {
-    for (int atest1 = 0; atest1 < attributes; atest1++)
+  for (int atest = 0; atest < num_attributes_; atest++) {
+    for (int atest1 = 0; atest1 < num_attributes_; atest1++)
       std::cout << graph[atest][atest1] << " ";
     std::cout << std::endl;
   }
   std::cout << std::endl;
 #endif
 
-  int *transfer = new int[attributes];
-  for (int v = 0; v < attributes; v++) transfer[v] = attributes;
+  int *transfer = new int[num_attributes_];
+  for (int v = 0; v < num_attributes_; v++) transfer[v] = num_attributes_;
 
   transfer[0] = 0;
 
-  for (int redo = 0; redo < attributes; redo++) {
-    int min = (attributes + 1);
+  for (int redo = 0; redo < num_attributes_; redo++) {
+    int min = (num_attributes_ + 1);
     int point = 0;
 
-    for (int redo1 = 0; redo1 < attributes; redo1++) {
+    for (int redo1 = 0; redo1 < num_attributes_; redo1++) {
       if (min > transfer[redo1]) {
         min = transfer[redo1];
         point = redo1;
       }
     }
 
-    for (int redo2 = 0; redo2 < attributes; redo2++) {
+    for (int redo2 = 0; redo2 < num_attributes_; redo2++) {
       if (graph[point][redo2] == 1) {
         graph[redo2][point] = 0;
         transfer[redo2] = (min + 1);
       }
     }
 
-    transfer[point] = (attributes + 1);
+    transfer[point] = (num_attributes_ + 1);
   }
 
 #ifdef DEBUG
   std::cout << std::endl;
-  for (int test = 0; test < attributes; test++) {
-    for (int test1 = 0; test1 < attributes; test1++)
+  for (int test = 0; test < num_attributes_; test++) {
+    for (int test1 = 0; test1 < num_attributes_; test1++)
       std::cout << graph[test][test1] << " ";
 
     std::cout << std::endl;
@@ -342,20 +375,21 @@ void BayesianNetwork::train(char *train_file) {
 
   //------------------------------------------------
 
-  parent = new int *[attributes];
+  parent = new int *[num_attributes_];
   // this 2-dimension array store each node's parents
-  for (int z = 0; z < attributes; z++) parent[z] = new int[attributes + 1];
+  for (int z = 0; z < num_attributes_; z++)
+    parent[z] = new int[num_attributes_ + 1];
 
-  for (int k = 0; k < attributes; k++) {
-    for (int kk = 0; kk <= attributes; kk++) parent[k][kk] = 0;
+  for (int k = 0; k < num_attributes_; k++) {
+    for (int kk = 0; kk <= num_attributes_; kk++) parent[k][kk] = 0;
   }
 
   // read the information about everyone's parents
-  for (int e = 0; e < attributes; e++) {
+  for (int e = 0; e < num_attributes_; e++) {
     int pama = 1;
     int pamaindex = 1;
 
-    for (int ee = 0; ee < attributes; ee++) {
+    for (int ee = 0; ee < num_attributes_; ee++) {
       if (graph[ee][e] == 1) {
         pama++;
         parent[e][pamaindex] = ee;
@@ -364,23 +398,24 @@ void BayesianNetwork::train(char *train_file) {
     }
 
     parent[e][0] = pama;
-    parent[e][pamaindex] = attributes;
+    parent[e][pamaindex] = num_attributes_;
   }
   //-------------------------------------------------
 
   // cpt is a three dimention array
-  // the first dimention is the attributes
+  // the first dimention is the num_attributes_
   // the last two dimention is the "conditional probability table"
   // for each attribute
-  cpt = new long double **[attributes];
-  for (int j1 = 0; j1 < attributes; j1++) {
-    cpt[j1] = new long double *[classNum[j1]];
+  cpt = new long double **[num_attributes_];
+  for (int j1 = 0; j1 < num_attributes_; j1++) {
+    cpt[j1] = new long double *[num_class_for_each_attribute_[j1]];
 
     // calculate the appropriate length of the third dimention
     int reg = 1;
-    for (int j2 = 1; j2 <= parent[j1][0]; j2++) reg *= classNum[parent[j1][j2]];
+    for (int j2 = 1; j2 <= parent[j1][0]; j2++)
+      reg *= num_class_for_each_attribute_[parent[j1][j2]];
 
-    for (int j3 = 0; j3 < classNum[j1]; j3++) {
+    for (int j3 = 0; j3 < num_class_for_each_attribute_[j1]; j3++) {
       cpt[j1][j3] = new long double[reg + 1];
 
       cpt[j1][j3][0] = reg;
@@ -396,26 +431,26 @@ void BayesianNetwork::train(char *train_file) {
     return;
   }
 
-  double *oneLine_double = new double[attributes + 1];
+  double *oneLine_double = new double[num_attributes_ + 1];
 
   // store the counts of each possible conjunction into cpt
-  for (int i = 1; i <= trainInstances; i++) {
+  for (int i = 1; i <= num_train_instances_; i++) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
 
-    for (int y = 0; y <= attributes; y++) {
+    for (int y = 0; y <= num_attributes_; y++) {
       getline(lineStream, Buf, ',');
       oneLine_double[y] = stod(Buf);
     }
 
-    for (int yy = 0; yy < attributes; yy++) {
+    for (int yy = 0; yy < num_attributes_; yy++) {
       int reg_add = 1;
       int reg_mul = 1;
 
       for (int yyy = 1; yyy <= parent[yy][0]; yyy++) {
         reg_add +=
             (reg_mul * (static_cast<int>(oneLine_double[parent[yy][yyy]]) - 1));
-        reg_mul *= classNum[parent[yy][yyy]];
+        reg_mul *= num_class_for_each_attribute_[parent[yy][yyy]];
       }
 
       cpt[yy][(static_cast<int>(oneLine_double[yy]) - 1)][reg_add]++;
@@ -427,13 +462,13 @@ void BayesianNetwork::train(char *train_file) {
 
   // processing the information in the protalbe to get the proabability of each
   // conjunction
-  for (int t1 = 0; t1 < attributes; t1++) {
+  for (int t1 = 0; t1 < num_attributes_; t1++) {
     for (int d = 1; d <= cpt[t1][0][0]; d++) {
-      for (int o = 0; o < classNum[t1]; o++) {
+      for (int o = 0; o < num_class_for_each_attribute_[t1]; o++) {
         // this loop judge weather there is zero occurence of some conjuction
         // if it dose, then do Laplacian correction
         if (cpt[t1][o][d] == 0) {
-          for (int p = 0; p < classNum[t1]; p++) {
+          for (int p = 0; p < num_class_for_each_attribute_[t1]; p++) {
             cpt[t1][p][d]++;
           }
           break;
@@ -442,25 +477,28 @@ void BayesianNetwork::train(char *train_file) {
 
       int sum = 0;
 
-      for (int w = 0; w < classNum[t1]; w++) sum += cpt[t1][w][d];
+      for (int w = 0; w < num_class_for_each_attribute_[t1]; w++)
+        sum += cpt[t1][w][d];
 
       // claculate every conjuction's contribution of probability
-      for (int ww = 0; ww < classNum[t1]; ww++) cpt[t1][ww][d] /= sum;
+      for (int ww = 0; ww < num_class_for_each_attribute_[t1]; ww++)
+        cpt[t1][ww][d] /= sum;
     }
   }
 
   // calculate the probability of each resulting class
-  for (int p = 0; p < outputClassNum; p++) {
-    classCount[p] = classCount[p] / trainInstances;
+  for (int p = 0; p < num_output_class_; p++) {
+    num_class_for_each_attributes_[p] =
+        num_class_for_each_attributes_[p] / num_train_instances_;
 #ifdef DEBUG
-    std::cout << classCount[p] << " ";
+    std::cout << num_class_for_each_attributes_[p] << " ";
 #endif
   }
 }
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void BayesianNetwork::predict(char *test_file) {
+void BayesianNetwork::Predict(char *test_file) {
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
     std::cout << "Can't open test data file!" << std::endl;
@@ -468,41 +506,42 @@ void BayesianNetwork::predict(char *test_file) {
   }
   std::string Buf;
 
-  int *truth = new int[testInstances];  // this array store the real result for
-                                        // comparison
-  for (int w = 0; w < testInstances; w++) {
+  int *truth = new int[num_test_instances_];  // this array store the real
+                                              // result for comparison
+  for (int w = 0; w < num_test_instances_; w++) {
     truth[w] = 0;
   }
 
-  int *outcome = new int[testInstances];  // this array store our prediciton
-  for (int f = 0; f < testInstances; f++) {
+  int *outcome =
+      new int[num_test_instances_];  // this array store our prediciton
+  for (int f = 0; f < num_test_instances_; f++) {
     outcome[f] = 0;
   }
 
   double *oneLine =
-      new double[attributes + 1];  // store each instance for processing
+      new double[num_attributes_ + 1];  // store each instance for processing
 
-  long double *decision = new long double[outputClassNum];
+  long double *decision = new long double[num_output_class_];
   // store the probability of each choice
 
-  for (int a = 0; a < testInstances; a++) {
+  for (int a = 0; a < num_test_instances_; a++) {
     getline(testInputFile, Buf);
     std::stringstream lineStream(Buf);
     // set the array's entries as 1 for each testing instance
-    for (int m = 0; m < outputClassNum; m++) decision[m] = 1;
+    for (int m = 0; m < num_output_class_; m++) decision[m] = 1;
 
     // read one instance for prediction
-    for (int u = 0; u <= attributes; u++) {
+    for (int u = 0; u <= num_attributes_; u++) {
       getline(lineStream, Buf, ',');
       oneLine[u] = stod(Buf);
     }
 
-    truth[a] = oneLine[attributes];
+    truth[a] = oneLine[num_attributes_];
     // store the truth
 
     // calculate each choice's probability
-    for (int x1 = 0; x1 < outputClassNum; x1++) {
-      for (int x2 = 0; x2 < attributes; x2++) {
+    for (int x1 = 0; x1 < num_output_class_; x1++) {
+      for (int x2 = 0; x2 < num_attributes_; x2++) {
         int reg_add = 1;  // objective's position of the third dimention array
         int reg_mul = 1;  // for calculating reg_add
 
@@ -510,19 +549,19 @@ void BayesianNetwork::predict(char *test_file) {
         for (int x3 = 1; x3 < parent[x2][0]; x3++) {
           reg_add +=
               (reg_mul * (static_cast<int>(oneLine[parent[x2][x3]]) - 1));
-          reg_mul *= classNum[parent[x2][x3]];
+          reg_mul *= num_class_for_each_attribute_[parent[x2][x3]];
         }
         reg_add += (reg_mul * x1);
 
         decision[x1] *= cpt[x2][static_cast<int>(oneLine[x2]) - 1][reg_add];
       }
-      decision[x1] *= classCount[x1];
+      decision[x1] *= num_class_for_each_attributes_[x1];
     }
 
     // decide which choice has the highest probability
     int big = 0;
     long double hug = decision[0];
-    for (int v = 1; v < outputClassNum; v++) {
+    for (int v = 1; v < num_output_class_; v++) {
       if (decision[v] > hug) {
         big = v;
         hug = decision[v];
@@ -530,7 +569,7 @@ void BayesianNetwork::predict(char *test_file) {
     }
     outcome[a] = (big + 1);
   }
-  accuracy(outcome, truth);
+  Accuracy(outcome, truth);
   // call function "accuracy" to calculate the accuracy
 
   // release memory

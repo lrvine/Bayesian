@@ -14,10 +14,10 @@ class BayesianNetwork : public Bayesian {
   BayesianNetwork(char *);
   ~BayesianNetwork();
   // initialize all the information we need from training data
-  void predict(char *);
+  void Predict(char *);
   // calculate the probability of each choice and choose the greatest one as our
   // prediction
-  void train(char *);
+  void Train(char *);
 };
 
 template <class Type>
