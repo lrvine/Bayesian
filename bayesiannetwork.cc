@@ -28,13 +28,13 @@ BayesianNetwork::~BayesianNetwork() {
   std::cout << " release memory " << std::endl;
 #endif
 
-  for (int x1 = 0; x1 < num_attributes_; x1++) {
-    for (int x2 = 0; x2 < num_class_for_each_attribute_[x1]; x2++)
-      delete[] conditional_probability_table_[x1][x2];
-    delete[] conditional_probability_table_[x1];
+  for (int i = 0; i < num_attributes_; i++) {
+    for (int j = 0; j < num_class_for_each_attribute_[i]; j++)
+      delete[] conditional_probability_table_[i][j];
+    delete[] conditional_probability_table_[i];
   }
 
-  for (int pa = 0; pa < num_attributes_; pa++) delete[] nodes_parents_[pa];
+  for (int i = 0; i < num_attributes_; i++) delete[] nodes_parents_[i];
 
   delete[] nodes_parents_;
   delete[] conditional_probability_table_;
@@ -62,54 +62,56 @@ void BayesianNetwork::Train(char *train_file) {
   int **rank = new int *[combinations];
   for (int idx = 0; idx < combinations; idx++) rank[idx] = new int[2];
   int index = 0;
-  for (int z = 0; z < (num_attributes_ - 1); z++) {
-    for (int p = 1; p <= (num_attributes_ - z - 1); p++) {
-      rank[index][0] = z;
-      rank[index][1] = (z + p);
+  for (int i = 0; i < (num_attributes_ - 1); i++) {
+    for (int j = 1; j <= (num_attributes_ - i - 1); j++) {
+      rank[index][0] = i;
+      rank[index][1] = (i + j);
       index++;
     }
   }
 
-  double **ccc = new double *[num_attributes_ * num_output_class_];
-  for (int f = 0; f < num_attributes_; f++) {
-    for (int f1 = (f * num_class_for_each_attribute_[num_attributes_]);
-         f1 < ((f + 1) * num_class_for_each_attribute_[num_attributes_]); f1++)
-      ccc[f1] = new double[num_class_for_each_attribute_[f]];
+  double **array_type_one = new double *[num_attributes_ * num_output_class_];
+  for (int f0 = 0; f0 < num_attributes_; f0++) {
+    for (int f1 = (f0 * num_class_for_each_attribute_[num_attributes_]);
+         f1 < ((f0 + 1) * num_class_for_each_attribute_[num_attributes_]); f1++)
+      array_type_one[f1] = new double[num_class_for_each_attribute_[f0]];
   }
   for (int f2 = 0; f2 < num_attributes_; f2++) {
     for (int f3 = (f2 * num_class_for_each_attribute_[num_attributes_]);
          f3 < ((f2 + 1) * num_class_for_each_attribute_[num_attributes_]);
          f3++) {
       for (int f4 = 0; f4 < num_class_for_each_attribute_[f2]; f4++)
-        ccc[f3][f4] = 0;
+        array_type_one[f3][f4] = 0;
     }
   }
 
-  double **aaa = new double *[combinations * num_output_class_];
-  for (int f = 0; f < combinations; f++) {
-    for (int f1 = (f * num_output_class_); f1 < ((f + 1) * num_output_class_);
+  double **array_type_two = new double *[combinations * num_output_class_];
+  for (int f0 = 0; f0 < combinations; f0++) {
+    for (int f1 = (f0 * num_output_class_); f1 < ((f0 + 1) * num_output_class_);
          f1++) {
-      aaa[f1] = new double[num_class_for_each_attribute_[rank[f][0]] *
-                           num_class_for_each_attribute_[rank[f][1]]];
+      array_type_two[f1] =
+          new double[num_class_for_each_attribute_[rank[f0][0]] *
+                     num_class_for_each_attribute_[rank[f0][1]]];
 
-      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f][0]] *
-                                num_class_for_each_attribute_[rank[f][1]];
+      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f0][0]] *
+                                num_class_for_each_attribute_[rank[f0][1]];
            f2++)
-        aaa[f1][f2] = 0;
+        array_type_two[f1][f2] = 0;
     }
   }
 
-  double **bbb = new double *[combinations * num_output_class_];
-  for (int f = 0; f < combinations; f++) {
-    for (int f1 = (f * num_output_class_); f1 < ((f + 1) * num_output_class_);
+  double **array_type_three = new double *[combinations * num_output_class_];
+  for (int f0 = 0; f0 < combinations; f0++) {
+    for (int f1 = (f0 * num_output_class_); f1 < ((f0 + 1) * num_output_class_);
          f1++) {
-      bbb[f1] = new double[num_class_for_each_attribute_[rank[f][0]] *
-                           num_class_for_each_attribute_[rank[f][1]]];
+      array_type_three[f1] =
+          new double[num_class_for_each_attribute_[rank[f0][0]] *
+                     num_class_for_each_attribute_[rank[f0][1]]];
 
-      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f][0]] *
-                                num_class_for_each_attribute_[rank[f][1]];
+      for (int f2 = 0; f2 < num_class_for_each_attribute_[rank[f0][0]] *
+                                num_class_for_each_attribute_[rank[f0][1]];
            f2++)
-        bbb[f1][f2] = 0;
+        array_type_three[f1][f2] = 0;
     }
   }
 
@@ -125,19 +127,19 @@ void BayesianNetwork::Train(char *train_file) {
     }
 
     for (int h = 0; h < num_attributes_; h++)
-      ccc[h * num_class_for_each_attribute_[num_attributes_] +
-          oneLine[num_attributes_] - 1][oneLine[h] - 1]++;
+      array_type_one[h * num_class_for_each_attribute_[num_attributes_] +
+                     oneLine[num_attributes_] - 1][oneLine[h] - 1]++;
 
     for (int h = 0; h < combinations; h++) {
-      aaa[h * num_output_class_ + oneLine[num_attributes_] - 1]
-         [(oneLine[rank[h][0]] - 1) *
-              num_class_for_each_attribute_[rank[h][1]] +
-          oneLine[rank[h][1]] - 1]++;
+      array_type_two[h * num_output_class_ + oneLine[num_attributes_] - 1]
+                    [(oneLine[rank[h][0]] - 1) *
+                         num_class_for_each_attribute_[rank[h][1]] +
+                     oneLine[rank[h][1]] - 1]++;
 
-      bbb[h * num_output_class_ + oneLine[num_attributes_] - 1]
-         [(oneLine[rank[h][0]] - 1) *
-              num_class_for_each_attribute_[rank[h][1]] +
-          oneLine[rank[h][1]] - 1]++;
+      array_type_three[h * num_output_class_ + oneLine[num_attributes_] - 1]
+                      [(oneLine[rank[h][0]] - 1) *
+                           num_class_for_each_attribute_[rank[h][1]] +
+                       oneLine[rank[h][1]] - 1]++;
     }
 
     num_class_for_each_attributes_[oneLine[num_attributes_] - 1]++;
@@ -150,20 +152,21 @@ void BayesianNetwork::Train(char *train_file) {
     for (int d = 0; d < num_class_for_each_attribute_[num_attributes_]; d++) {
       int correction = 0;
 
-      for (int o = 0; o < num_class_for_each_attribute_[t]; o++) {
-        if (ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][o] ==
-            0) {
+      for (int e = 0; e < num_class_for_each_attribute_[t]; e++) {
+        if (array_type_one[(t * num_class_for_each_attribute_[num_attributes_] +
+                            d)][e] == 0) {
           correction = num_class_for_each_attribute_[t];
           for (int p = 0; p < num_class_for_each_attribute_[t]; p++) {
-            ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][p]++;
+            array_type_one[(t * num_class_for_each_attribute_[num_attributes_] +
+                            d)][p]++;
           }
           break;
         }
       }
 
       for (int w = 0; w < num_class_for_each_attribute_[t]; w++)
-        ccc[(t * num_class_for_each_attribute_[num_attributes_] + d)][w] /=
-            (num_class_for_each_attributes_[d] + correction);
+        array_type_one[(t * num_class_for_each_attribute_[num_attributes_] + d)]
+                      [w] /= (num_class_for_each_attributes_[d] + correction);
     }
   }
 
@@ -171,15 +174,15 @@ void BayesianNetwork::Train(char *train_file) {
     int correction1 = 0;
 
     for (int d = 0; d < num_output_class_; d++) {
-      for (int o = 0; o < num_class_for_each_attribute_[rank[i][0]] *
+      for (int e = 0; e < num_class_for_each_attribute_[rank[i][0]] *
                               num_class_for_each_attribute_[rank[i][1]];
-           o++) {
-        if (aaa[i * num_output_class_ + d][o] == 0) {
+           e++) {
+        if (array_type_two[i * num_output_class_ + d][e] == 0) {
           for (int p = 0; p < num_output_class_; p++) {
             for (int q = 0; q < num_class_for_each_attribute_[rank[i][0]] *
                                     num_class_for_each_attribute_[rank[i][1]];
                  q++) {
-              aaa[i * num_output_class_ + p][q]++;
+              array_type_two[i * num_output_class_ + p][q]++;
             }
           }
 
@@ -196,7 +199,7 @@ void BayesianNetwork::Train(char *train_file) {
       for (int w2 = 0; w2 < num_class_for_each_attribute_[rank[i][0]] *
                                 num_class_for_each_attribute_[rank[i][1]];
            w2++) {
-        aaa[i * num_output_class_ + w1][w2] /=
+        array_type_two[i * num_output_class_ + w1][w2] /=
             (num_train_instances_ + correction1);
       }
     }
@@ -209,11 +212,11 @@ void BayesianNetwork::Train(char *train_file) {
       for (int o = 0; o < num_class_for_each_attribute_[rank[t][0]] *
                               num_class_for_each_attribute_[rank[t][1]];
            o++) {
-        if (bbb[t * num_output_class_ + d][o] == 0) {
+        if (array_type_three[t * num_output_class_ + d][o] == 0) {
           for (int p = 0; p < num_class_for_each_attribute_[rank[t][0]] *
                                   num_class_for_each_attribute_[rank[t][1]];
                p++) {
-            bbb[t * num_output_class_ + d][p]++;
+            array_type_three[t * num_output_class_ + d][p]++;
           }
 
           correction2 = num_class_for_each_attribute_[rank[t][0]] *
@@ -226,7 +229,7 @@ void BayesianNetwork::Train(char *train_file) {
       for (int w2 = 0; w2 < num_class_for_each_attribute_[rank[t][0]] *
                                 num_class_for_each_attribute_[rank[t][1]];
            w2++)
-        bbb[t * num_output_class_ + d][w2] /=
+        array_type_three[t * num_output_class_ + d][w2] /=
             (num_class_for_each_attributes_[d] + correction2);
     }
   }
@@ -234,23 +237,26 @@ void BayesianNetwork::Train(char *train_file) {
   double *relation = new double[combinations];
 
   for (int s0 = 0; s0 < combinations; s0++) {
-    double tempo = 0;
+    double temp = 0;
 
     for (int s1 = 0; s1 < num_output_class_; s1++) {
       for (int s2 = 0; s2 < num_class_for_each_attribute_[rank[s0][0]]; s2++) {
         for (int s3 = 0; s3 < num_class_for_each_attribute_[rank[s0][1]];
              s3++) {
-          tempo +=
-              (aaa[s0 * num_output_class_ + s1]
-                  [s2 * num_class_for_each_attribute_[rank[s0][1]] + s3] *
-               log10(bbb[s0 * num_output_class_ + s1]
-                        [s2 * num_class_for_each_attribute_[rank[s0][1]] + s3] /
-                     (ccc[rank[s0][0] * num_output_class_ + s1][s2] *
-                      ccc[rank[s0][1] * num_output_class_ + s1][s3])));
+          temp +=
+              (array_type_two[s0 * num_output_class_ + s1]
+                             [s2 * num_class_for_each_attribute_[rank[s0][1]] +
+                              s3] *
+               log10(
+                   array_type_three
+                       [s0 * num_output_class_ + s1]
+                       [s2 * num_class_for_each_attribute_[rank[s0][1]] + s3] /
+                   (array_type_one[rank[s0][0] * num_output_class_ + s1][s2] *
+                    array_type_one[rank[s0][1] * num_output_class_ + s1][s3])));
         }
       }
     }
-    relation[s0] = tempo;
+    relation[s0] = temp;
   }
 
   std::priority_queue<KeyAndTwoValue<int>, std::vector<KeyAndTwoValue<int> >,
@@ -266,55 +272,54 @@ void BayesianNetwork::Train(char *train_file) {
   }
 
   int *groups = new int[num_attributes_];
-  for (int v = 0; v < num_attributes_; v++) groups[v] = 0;
+  for (int i = 0; i < num_attributes_; i++) groups[i] = 0;
 
   int **graph = new int *[num_attributes_];
-  for (int zz1 = 0; zz1 < num_attributes_; zz1++)
-    graph[zz1] = new int[num_attributes_];
+  for (int i = 0; i < num_attributes_; i++) graph[i] = new int[num_attributes_];
 
-  for (int k1 = 0; k1 < num_attributes_; k1++) {
-    for (int kk1 = 0; kk1 < num_attributes_; kk1++) graph[k1][kk1] = 0;
+  for (int i = 0; i < num_attributes_; i++) {
+    for (int j = 0; j < num_attributes_; j++) graph[i][j] = 0;
   }
 
-  KeyAndTwoValue<int> mmm;
+  KeyAndTwoValue<int> one_case;
   int base = 1;
 
   for (int combi = 0; combi < combinations; combi++) {
     if (!maxweight.empty()) {
-      mmm = maxweight.top();
+      one_case = maxweight.top();
       maxweight.pop();
     }
 
-    if (groups[mmm.value1] != 0 && groups[mmm.value2] != 0 &&
-        groups[mmm.value1] == groups[mmm.value2]) {
-    } else if (groups[mmm.value1] == 0 &&
-               groups[mmm.value1] == groups[mmm.value2]) {
-      groups[mmm.value1] = base;
-      groups[mmm.value2] = base;
+    if (groups[one_case.value1] != 0 && groups[one_case.value2] != 0 &&
+        groups[one_case.value1] == groups[one_case.value2]) {
+    } else if (groups[one_case.value1] == 0 &&
+               groups[one_case.value1] == groups[one_case.value2]) {
+      groups[one_case.value1] = base;
+      groups[one_case.value2] = base;
       base++;
 
-      graph[mmm.value1][mmm.value2] = 1;
-      graph[mmm.value2][mmm.value1] = 1;
-    } else if (groups[mmm.value1] == 0 && groups[mmm.value2] != 0) {
-      groups[mmm.value1] = groups[mmm.value2];
+      graph[one_case.value1][one_case.value2] = 1;
+      graph[one_case.value2][one_case.value1] = 1;
+    } else if (groups[one_case.value1] == 0 && groups[one_case.value2] != 0) {
+      groups[one_case.value1] = groups[one_case.value2];
 
-      graph[mmm.value1][mmm.value2] = 1;
-      graph[mmm.value2][mmm.value1] = 1;
-    } else if (groups[mmm.value1] != 0 && groups[mmm.value2] == 0) {
-      groups[mmm.value2] = groups[mmm.value1];
+      graph[one_case.value1][one_case.value2] = 1;
+      graph[one_case.value2][one_case.value1] = 1;
+    } else if (groups[one_case.value1] != 0 && groups[one_case.value2] == 0) {
+      groups[one_case.value2] = groups[one_case.value1];
 
-      graph[mmm.value1][mmm.value2] = 1;
-      graph[mmm.value2][mmm.value1] = 1;
-    } else if (groups[mmm.value1] != 0 && groups[mmm.value2] != 0 &&
-               groups[mmm.value1] != groups[mmm.value2]) {
+      graph[one_case.value1][one_case.value2] = 1;
+      graph[one_case.value2][one_case.value1] = 1;
+    } else if (groups[one_case.value1] != 0 && groups[one_case.value2] != 0 &&
+               groups[one_case.value1] != groups[one_case.value2]) {
       int boss, slave;
 
-      if (groups[mmm.value1] < groups[mmm.value2]) {
-        boss = groups[mmm.value1];
-        slave = groups[mmm.value2];
+      if (groups[one_case.value1] < groups[one_case.value2]) {
+        boss = groups[one_case.value1];
+        slave = groups[one_case.value2];
       } else {
-        boss = groups[mmm.value2];
-        slave = groups[mmm.value1];
+        boss = groups[one_case.value2];
+        slave = groups[one_case.value1];
       }
 
       for (int scan = 0; scan < num_attributes_; scan++) {
@@ -323,8 +328,8 @@ void BayesianNetwork::Train(char *train_file) {
         }
       }
 
-      graph[mmm.value1][mmm.value2] = 1;
-      graph[mmm.value2][mmm.value1] = 1;
+      graph[one_case.value1][one_case.value2] = 1;
+      graph[one_case.value2][one_case.value1] = 1;
     }
   }
 
@@ -338,7 +343,7 @@ void BayesianNetwork::Train(char *train_file) {
 #endif
 
   int *transfer = new int[num_attributes_];
-  for (int v = 0; v < num_attributes_; v++) transfer[v] = num_attributes_;
+  for (int i = 0; i < num_attributes_; i++) transfer[i] = num_attributes_;
 
   transfer[0] = 0;
 
@@ -378,28 +383,28 @@ void BayesianNetwork::Train(char *train_file) {
 
   nodes_parents_ = new int *[num_attributes_];
   // this 2-dimension array store each node's parents
-  for (int z = 0; z < num_attributes_; z++)
-    nodes_parents_[z] = new int[num_attributes_ + 1];
+  for (int i = 0; i < num_attributes_; i++)
+    nodes_parents_[i] = new int[num_attributes_ + 1];
 
   for (int k = 0; k < num_attributes_; k++) {
     for (int kk = 0; kk <= num_attributes_; kk++) nodes_parents_[k][kk] = 0;
   }
 
   // read the information about everyone's parents
-  for (int e = 0; e < num_attributes_; e++) {
+  for (int i = 0; i < num_attributes_; i++) {
     int pama = 1;
     int pamaindex = 1;
 
-    for (int ee = 0; ee < num_attributes_; ee++) {
-      if (graph[ee][e] == 1) {
+    for (int j = 0; j < num_attributes_; j++) {
+      if (graph[j][i] == 1) {
         pama++;
-        nodes_parents_[e][pamaindex] = ee;
+        nodes_parents_[i][pamaindex] = j;
         pamaindex++;
       }
     }
 
-    nodes_parents_[e][0] = pama;
-    nodes_parents_[e][pamaindex] = num_attributes_;
+    nodes_parents_[i][0] = pama;
+    nodes_parents_[i][pamaindex] = num_attributes_;
   }
   //-------------------------------------------------
 
@@ -441,24 +446,24 @@ void BayesianNetwork::Train(char *train_file) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
 
-    for (int y = 0; y <= num_attributes_; y++) {
+    for (int j = 0; j <= num_attributes_; j++) {
       getline(lineStream, Buf, ',');
-      oneLine_double[y] = stod(Buf);
+      oneLine_double[j] = stod(Buf);
     }
 
-    for (int yy = 0; yy < num_attributes_; yy++) {
+    for (int j = 0; j < num_attributes_; j++) {
       int reg_add = 1;
       int reg_mul = 1;
 
-      for (int yyy = 1; yyy <= nodes_parents_[yy][0]; yyy++) {
+      for (int k = 1; k <= nodes_parents_[j][0]; k++) {
         reg_add +=
             (reg_mul *
-             (static_cast<int>(oneLine_double[nodes_parents_[yy][yyy]]) - 1));
-        reg_mul *= num_class_for_each_attribute_[nodes_parents_[yy][yyy]];
+             (static_cast<int>(oneLine_double[nodes_parents_[j][k]]) - 1));
+        reg_mul *= num_class_for_each_attribute_[nodes_parents_[j][k]];
       }
 
-      conditional_probability_table_[yy][(static_cast<int>(oneLine_double[yy]) -
-                                          1)][reg_add]++;
+      conditional_probability_table_[j][(static_cast<int>(oneLine_double[j]) -
+                                         1)][reg_add]++;
     }
   }
 
@@ -468,13 +473,13 @@ void BayesianNetwork::Train(char *train_file) {
   // processing the information in the protalbe to get the proabability of each
   // conjunction
   for (int t1 = 0; t1 < num_attributes_; t1++) {
-    for (int d = 1; d <= conditional_probability_table_[t1][0][0]; d++) {
-      for (int o = 0; o < num_class_for_each_attribute_[t1]; o++) {
+    for (int t2 = 1; t2 <= conditional_probability_table_[t1][0][0]; t2++) {
+      for (int t3 = 0; t3 < num_class_for_each_attribute_[t1]; t3++) {
         // this loop judge weather there is zero occurence of some conjuction
         // if it dose, then do Laplacian correction
-        if (conditional_probability_table_[t1][o][d] == 0) {
+        if (conditional_probability_table_[t1][t3][t2] == 0) {
           for (int p = 0; p < num_class_for_each_attribute_[t1]; p++) {
-            conditional_probability_table_[t1][p][d]++;
+            conditional_probability_table_[t1][p][t2]++;
           }
           break;
         }
@@ -483,11 +488,11 @@ void BayesianNetwork::Train(char *train_file) {
       int sum = 0;
 
       for (int w = 0; w < num_class_for_each_attribute_[t1]; w++)
-        sum += conditional_probability_table_[t1][w][d];
+        sum += conditional_probability_table_[t1][w][t2];
 
       // claculate every conjuction's contribution of probability
-      for (int ww = 0; ww < num_class_for_each_attribute_[t1]; ww++)
-        conditional_probability_table_[t1][ww][d] /= sum;
+      for (int w = 0; w < num_class_for_each_attribute_[t1]; w++)
+        conditional_probability_table_[t1][w][t2] /= sum;
     }
   }
 
