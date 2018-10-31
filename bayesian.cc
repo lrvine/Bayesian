@@ -6,7 +6,7 @@
 namespace baysian {
 
 // calculate the accuracy
-void bayesian::accuracy(int *outcome, int *truth) {
+void Bayesian::accuracy(int *outcome, int *truth) {
   double correct = 0;  // store the number of correct predictions
 
   for (int i = 0; i < testInstances; i++)
@@ -24,7 +24,7 @@ void bayesian::accuracy(int *outcome, int *truth) {
   std::cout << "Accuracy is " << percentage * 100 << "%" << std::endl;
 }
 
-void bayesian::parse_configuration(char *cfg_file) {
+void Bayesian::parse_configuration(char *cfg_file) {
   std::ifstream configure;
   configure.open(cfg_file);
   if (!configure) {

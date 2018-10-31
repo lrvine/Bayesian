@@ -17,12 +17,12 @@ struct data_compare {
 };
 
 // initialize all the information we need from training data
-bayesianNetwork::bayesianNetwork(char *cfg_file) {
+BayesianNetwork::BayesianNetwork(char *cfg_file) {
   std::cout << "Run Baysiannetwork" << std::endl;
   parse_configuration(cfg_file);
 }
 
-bayesianNetwork::~bayesianNetwork() {
+BayesianNetwork::~BayesianNetwork() {
   // release the memory
 #ifdef DEBUG
   std::cout << " release memory " << std::endl;
@@ -42,7 +42,7 @@ bayesianNetwork::~bayesianNetwork() {
   delete[] classCount;
 }
 
-void bayesianNetwork::train(char *train_file) {
+void BayesianNetwork::train(char *train_file) {
   int combinations = 1;
   for (int com = (attributes - 1); com > 1; com--) combinations += com;
 
@@ -460,7 +460,7 @@ void bayesianNetwork::train(char *train_file) {
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void bayesianNetwork::predict(char *test_file) {
+void BayesianNetwork::predict(char *test_file) {
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
     std::cout << "Can't open test data file!" << std::endl;

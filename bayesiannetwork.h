@@ -5,14 +5,14 @@
 
 namespace baysian {
 
-class bayesianNetwork : public bayesian {
+class BayesianNetwork : public Bayesian {
  private:
   long double ***cpt;
   int **parent;
 
  public:
-  bayesianNetwork(char *);
-  ~bayesianNetwork();
+  BayesianNetwork(char *);
+  ~BayesianNetwork();
   // initialize all the information we need from training data
   void predict(char *);
   // calculate the probability of each choice and choose the greatest one as our

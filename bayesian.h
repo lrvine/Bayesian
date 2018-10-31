@@ -3,7 +3,7 @@
 
 namespace baysian {
 
-class bayesian {
+class Bayesian {
  public:
   virtual void train(char *) = 0;
   virtual void predict(char *) = 0;

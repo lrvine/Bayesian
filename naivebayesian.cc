@@ -10,12 +10,12 @@
 namespace baysian {
 
 // initialize all the information we need from training data
-naiveBayesian::naiveBayesian(char *cfg_file) {
-  std::cout << "Run naiveBayesian" << std::endl;
+NaiveBayesian::NaiveBayesian(char *cfg_file) {
+  std::cout << "Run NaiveBayesian" << std::endl;
   parse_configuration(cfg_file);
 }
 
-naiveBayesian::~naiveBayesian() {
+NaiveBayesian::~NaiveBayesian() {
   // release the memory
 #ifdef DEBUG
   std::cout << " release memory " << std::endl;
@@ -28,7 +28,7 @@ naiveBayesian::~naiveBayesian() {
   delete[] classCount;
 }
 
-void naiveBayesian::train(char *train_file) {
+void NaiveBayesian::train(char *train_file) {
   std::ifstream trainingDataFile;
   std::string Buf;
   trainingDataFile.open(train_file);
@@ -155,7 +155,7 @@ void naiveBayesian::train(char *train_file) {
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void naiveBayesian::predict(char *test_file) {
+void NaiveBayesian::predict(char *test_file) {
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
     std::cout << "Can't open test data file!" << std::endl;
