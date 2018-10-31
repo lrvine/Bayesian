@@ -9,14 +9,15 @@ namespace baysian {
 
 class NaiveBayesian : public Bayesian {
  public:
-  void Train(char *);
-  void Predict(char *);
-  // calculate the probability of each choice
-  // and choose the greatest one as our prediction
   NaiveBayesian(char *);
   // initialize all the information we need from training data
   ~NaiveBayesian();
   // release memory
+  void Train(char *);
+  void Predict(char *);
+  // calculate the probability of each choice
+  // and choose the greatest one as our prediction
+
  private:
   long double **probabilityTable;
 };
