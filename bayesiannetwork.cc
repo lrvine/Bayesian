@@ -10,7 +10,7 @@
 
 namespace baysian {
 
-struct data_compare {
+struct KeyCompare {
   bool operator()(const KeyAndTwoValue<int> l, const KeyAndTwoValue<int> r) {
     return l.key > r.key;
   }
@@ -254,7 +254,7 @@ void BayesianNetwork::Train(char *train_file) {
   }
 
   std::priority_queue<KeyAndTwoValue<int>, std::vector<KeyAndTwoValue<int> >,
-                      data_compare>
+                      KeyCompare>
       maxweight;
   KeyAndTwoValue<int> elen;
 
