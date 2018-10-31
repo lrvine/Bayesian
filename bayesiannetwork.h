@@ -21,7 +21,7 @@ class BayesianNetwork : public Bayesian {
 };
 
 template <class Type>
-struct data {
+struct KeyAndTwoValue {
   double key;
   Type value1;
   Type value2;

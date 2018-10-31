@@ -11,7 +11,7 @@
 namespace baysian {
 
 struct data_compare {
-  bool operator()(const data<int> l, const data<int> r) {
+  bool operator()(const KeyAndTwoValue<int> l, const KeyAndTwoValue<int> r) {
     return l.key > r.key;
   }
 };
@@ -253,9 +253,10 @@ void BayesianNetwork::Train(char *train_file) {
     relation[s0] = tempo;
   }
 
-  std::priority_queue<data<int>, std::vector<data<int> >, data_compare>
+  std::priority_queue<KeyAndTwoValue<int>, std::vector<KeyAndTwoValue<int> >,
+                      data_compare>
       maxweight;
-  data<int> elen;
+  KeyAndTwoValue<int> elen;
 
   for (int cast = 0; cast < combinations; cast++) {
     elen.value1 = rank[cast][0];
@@ -275,7 +276,7 @@ void BayesianNetwork::Train(char *train_file) {
     for (int kk1 = 0; kk1 < num_attributes_; kk1++) graph[k1][kk1] = 0;
   }
 
-  data<int> mmm;
+  KeyAndTwoValue<int> mmm;
   int base = 1;
 
   for (int combi = 0; combi < combinations; combi++) {
