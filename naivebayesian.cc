@@ -1,4 +1,5 @@
 #include "naivebayesian.h"
+
 #include <cmath>
 #include <fstream>
 #include <iomanip>

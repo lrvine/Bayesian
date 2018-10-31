@@ -2,6 +2,7 @@
 #define BAYESIANNETWORK_H_
 
 #include "bayesian.h"
+
 namespace baysian {
 
 class bayesianNetwork : public bayesian {

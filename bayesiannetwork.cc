@@ -1,3 +1,5 @@
+#include "bayesiannetwork.h"
+
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -5,8 +7,6 @@
 #include <queue>
 #include <sstream>
 #include <string>
-
-#include "bayesiannetwork.h"
 
 namespace baysian {
 

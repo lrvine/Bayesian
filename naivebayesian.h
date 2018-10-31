@@ -2,13 +2,12 @@
 #define NAIVEBAYESIAN_H_
 
 #include <vector>
+
 #include "bayesian.h"
+
 namespace baysian {
 
 class naiveBayesian : public bayesian {
- private:
-  long double **probabilityTable;
-
  public:
   void train(char *);
   void predict(char *);
@@ -18,6 +17,8 @@ class naiveBayesian : public bayesian {
   // initialize all the information we need from training data
   ~naiveBayesian();
   // release memory
+ private:
+  long double **probabilityTable;
 };
 
 }  // namespace baysian
