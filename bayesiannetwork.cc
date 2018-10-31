@@ -30,14 +30,14 @@ BayesianNetwork::~BayesianNetwork() {
 
   for (int x1 = 0; x1 < num_attributes_; x1++) {
     for (int x2 = 0; x2 < num_class_for_each_attribute_[x1]; x2++)
-      delete[] cpt[x1][x2];
-    delete[] cpt[x1];
+      delete[] conditional_probability_table_[x1][x2];
+    delete[] conditional_probability_table_[x1];
   }
 
-  for (int pa = 0; pa < num_attributes_; pa++) delete[] parent[pa];
+  for (int pa = 0; pa < num_attributes_; pa++) delete[] nodes_parents_[pa];
 
-  delete[] parent;
-  delete[] cpt;
+  delete[] nodes_parents_;
+  delete[] conditional_probability_table_;
   delete[] num_class_for_each_attribute_;
   delete[] is_discrete_;
   delete[] num_class_for_each_attributes_;
@@ -375,13 +375,13 @@ void BayesianNetwork::Train(char *train_file) {
 
   //------------------------------------------------
 
-  parent = new int *[num_attributes_];
+  nodes_parents_ = new int *[num_attributes_];
   // this 2-dimension array store each node's parents
   for (int z = 0; z < num_attributes_; z++)
-    parent[z] = new int[num_attributes_ + 1];
+    nodes_parents_[z] = new int[num_attributes_ + 1];
 
   for (int k = 0; k < num_attributes_; k++) {
-    for (int kk = 0; kk <= num_attributes_; kk++) parent[k][kk] = 0;
+    for (int kk = 0; kk <= num_attributes_; kk++) nodes_parents_[k][kk] = 0;
   }
 
   // read the information about everyone's parents
@@ -392,36 +392,37 @@ void BayesianNetwork::Train(char *train_file) {
     for (int ee = 0; ee < num_attributes_; ee++) {
       if (graph[ee][e] == 1) {
         pama++;
-        parent[e][pamaindex] = ee;
+        nodes_parents_[e][pamaindex] = ee;
         pamaindex++;
       }
     }
 
-    parent[e][0] = pama;
-    parent[e][pamaindex] = num_attributes_;
+    nodes_parents_[e][0] = pama;
+    nodes_parents_[e][pamaindex] = num_attributes_;
   }
   //-------------------------------------------------
 
-  // cpt is a three dimention array
+  // conditional_probability_table_ is a three dimention array
   // the first dimention is the num_attributes_
   // the last two dimention is the "conditional probability table"
   // for each attribute
-  cpt = new long double **[num_attributes_];
+  conditional_probability_table_ = new long double **[num_attributes_];
   for (int j1 = 0; j1 < num_attributes_; j1++) {
-    cpt[j1] = new long double *[num_class_for_each_attribute_[j1]];
+    conditional_probability_table_[j1] =
+        new long double *[num_class_for_each_attribute_[j1]];
 
     // calculate the appropriate length of the third dimention
     int reg = 1;
-    for (int j2 = 1; j2 <= parent[j1][0]; j2++)
-      reg *= num_class_for_each_attribute_[parent[j1][j2]];
+    for (int j2 = 1; j2 <= nodes_parents_[j1][0]; j2++)
+      reg *= num_class_for_each_attribute_[nodes_parents_[j1][j2]];
 
     for (int j3 = 0; j3 < num_class_for_each_attribute_[j1]; j3++) {
-      cpt[j1][j3] = new long double[reg + 1];
+      conditional_probability_table_[j1][j3] = new long double[reg + 1];
 
-      cpt[j1][j3][0] = reg;
+      conditional_probability_table_[j1][j3][0] = reg;
 
       for (int j4 = 1; j4 <= reg; j4++)  // initialize to zero
-        cpt[j1][j3][j4] = 0;
+        conditional_probability_table_[j1][j3][j4] = 0;
     }
   }
 
@@ -433,7 +434,8 @@ void BayesianNetwork::Train(char *train_file) {
 
   double *oneLine_double = new double[num_attributes_ + 1];
 
-  // store the counts of each possible conjunction into cpt
+  // store the counts of each possible conjunction into
+  // conditional_probability_table_
   for (int i = 1; i <= num_train_instances_; i++) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
@@ -447,13 +449,15 @@ void BayesianNetwork::Train(char *train_file) {
       int reg_add = 1;
       int reg_mul = 1;
 
-      for (int yyy = 1; yyy <= parent[yy][0]; yyy++) {
+      for (int yyy = 1; yyy <= nodes_parents_[yy][0]; yyy++) {
         reg_add +=
-            (reg_mul * (static_cast<int>(oneLine_double[parent[yy][yyy]]) - 1));
-        reg_mul *= num_class_for_each_attribute_[parent[yy][yyy]];
+            (reg_mul *
+             (static_cast<int>(oneLine_double[nodes_parents_[yy][yyy]]) - 1));
+        reg_mul *= num_class_for_each_attribute_[nodes_parents_[yy][yyy]];
       }
 
-      cpt[yy][(static_cast<int>(oneLine_double[yy]) - 1)][reg_add]++;
+      conditional_probability_table_[yy][(static_cast<int>(oneLine_double[yy]) -
+                                          1)][reg_add]++;
     }
   }
 
@@ -463,13 +467,13 @@ void BayesianNetwork::Train(char *train_file) {
   // processing the information in the protalbe to get the proabability of each
   // conjunction
   for (int t1 = 0; t1 < num_attributes_; t1++) {
-    for (int d = 1; d <= cpt[t1][0][0]; d++) {
+    for (int d = 1; d <= conditional_probability_table_[t1][0][0]; d++) {
       for (int o = 0; o < num_class_for_each_attribute_[t1]; o++) {
         // this loop judge weather there is zero occurence of some conjuction
         // if it dose, then do Laplacian correction
-        if (cpt[t1][o][d] == 0) {
+        if (conditional_probability_table_[t1][o][d] == 0) {
           for (int p = 0; p < num_class_for_each_attribute_[t1]; p++) {
-            cpt[t1][p][d]++;
+            conditional_probability_table_[t1][p][d]++;
           }
           break;
         }
@@ -478,11 +482,11 @@ void BayesianNetwork::Train(char *train_file) {
       int sum = 0;
 
       for (int w = 0; w < num_class_for_each_attribute_[t1]; w++)
-        sum += cpt[t1][w][d];
+        sum += conditional_probability_table_[t1][w][d];
 
       // claculate every conjuction's contribution of probability
       for (int ww = 0; ww < num_class_for_each_attribute_[t1]; ww++)
-        cpt[t1][ww][d] /= sum;
+        conditional_probability_table_[t1][ww][d] /= sum;
     }
   }
 
@@ -546,14 +550,16 @@ void BayesianNetwork::Predict(char *test_file) {
         int reg_mul = 1;  // for calculating reg_add
 
         // the address of our objective is depend on this attribute's parent
-        for (int x3 = 1; x3 < parent[x2][0]; x3++) {
-          reg_add +=
-              (reg_mul * (static_cast<int>(oneLine[parent[x2][x3]]) - 1));
-          reg_mul *= num_class_for_each_attribute_[parent[x2][x3]];
+        for (int x3 = 1; x3 < nodes_parents_[x2][0]; x3++) {
+          reg_add += (reg_mul *
+                      (static_cast<int>(oneLine[nodes_parents_[x2][x3]]) - 1));
+          reg_mul *= num_class_for_each_attribute_[nodes_parents_[x2][x3]];
         }
         reg_add += (reg_mul * x1);
 
-        decision[x1] *= cpt[x2][static_cast<int>(oneLine[x2]) - 1][reg_add];
+        decision[x1] *=
+            conditional_probability_table_[x2][static_cast<int>(oneLine[x2]) -
+                                               1][reg_add];
       }
       decision[x1] *= num_class_for_each_attributes_[x1];
     }

@@ -6,10 +6,6 @@
 namespace baysian {
 
 class BayesianNetwork : public Bayesian {
- private:
-  long double ***cpt;
-  int **parent;
-
  public:
   BayesianNetwork(char *);
   ~BayesianNetwork();
@@ -18,6 +14,10 @@ class BayesianNetwork : public Bayesian {
   // calculate the probability of each choice and choose the greatest one as our
   // prediction
   void Train(char *);
+
+ private:
+  long double ***conditional_probability_table_;
+  int **nodes_parents_;
 };
 
 template <class Type>
