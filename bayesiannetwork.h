@@ -1,3 +1,6 @@
+#ifndef BAYESIANNETWORK_H_
+#define BAYESIANNETWORK_H_
+
 #include "bayesian.h"
 namespace baysian {
 
@@ -24,3 +27,5 @@ struct data {
 };
 
 }  // namespace baysian
+
+#endif

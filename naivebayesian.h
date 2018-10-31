@@ -1,3 +1,6 @@
+#ifndef NAIVEBAYESIAN_H_
+#define NAIVEBAYESIAN_H_
+
 #include <vector>
 #include "bayesian.h"
 namespace baysian {
@@ -18,3 +21,5 @@ class naiveBayesian : public bayesian {
 };
 
 }  // namespace baysian
+
+#endif

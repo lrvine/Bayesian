@@ -1,5 +1,5 @@
-#ifndef bayesian_h
-#define bayesian_h
+#ifndef BAYESIAN_H_
+#define BAYESIAN_H_
 
 namespace baysian {
 
