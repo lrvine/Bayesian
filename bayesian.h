@@ -20,7 +20,7 @@ class bayesian {
   int attributes;      // store the number of attributes
   int outputClassNum;  // the number of output classes
 
-  void accuracy(int *, int *);  // claculate the accuracy
+  virtual void accuracy(int *, int *) const;  // claculate the accuracy
   void parse_configuration(char *);
 };
 
