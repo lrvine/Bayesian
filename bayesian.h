@@ -9,6 +9,7 @@ class Bayesian {
   virtual void Predict(char *) = 0;
   // calculate the probability of each choice
   // and choose the greatest one as our prediction
+  virtual void Accuracy(int *, int *) const;  // claculate the Accuracy
  protected:
   double *num_class_for_each_attributes_;
   // this array store the total number of
@@ -22,7 +23,6 @@ class Bayesian {
   int num_attributes_;                 // store the number of attributes
   int num_output_class_;               // the number of output classes
 
-  virtual void Accuracy(int *, int *) const;  // claculate the Accuracy
   void ParseConfiguration(char *);
 };
 
