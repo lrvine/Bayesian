@@ -32,11 +32,11 @@ int main(int argc, char **argv) {
   }
   begin = clock();
   if (method == 0) {
-    baysian::NaiveBayesian naive(cfg);
+    machinelearning::baysian::NaiveBayesian naive(cfg);
     naive.Train(train);
     naive.Predict(input);  // call function to do prediction
   } else if (method == 1) {
-    baysian::BayesianNetwork bnetwork(cfg);
+    machinelearning::baysian::BayesianNetwork bnetwork(cfg);
     bnetwork.Train(train);
     bnetwork.Predict(input);
   }

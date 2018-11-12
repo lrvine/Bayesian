@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 
+namespace machinelearning {
 namespace baysian {
 
 struct KeyCompare {
@@ -592,3 +593,4 @@ void BayesianNetwork::Predict(char *test_file) {
 }
 
 }  // namespace baysian
+}  // namespace machinelearning

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+namespace machinelearning {
 namespace baysian {
 
 // initialize all the information we need from training data
@@ -277,3 +278,4 @@ void NaiveBayesian::Predict(char *test_file) {
 }
 
 }  // namespace baysian
+}  // namespace machinelearning

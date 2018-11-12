@@ -5,6 +5,7 @@
 
 #include "bayesian.h"
 
+namespace machinelearning {
 namespace baysian {
 
 class NaiveBayesian : public Bayesian {
@@ -23,5 +24,5 @@ class NaiveBayesian : public Bayesian {
 };
 
 }  // namespace baysian
-
+}  // namespace machinelearning
 #endif

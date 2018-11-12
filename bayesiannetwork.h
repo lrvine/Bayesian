@@ -3,6 +3,7 @@
 
 #include "bayesian.h"
 
+namespace machinelearning {
 namespace baysian {
 
 class BayesianNetwork : public Bayesian {
@@ -28,5 +29,5 @@ struct KeyAndTwoValue {
 };
 
 }  // namespace baysian
-
+}  // namespace machinelearning
 #endif
