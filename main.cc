@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
   clock_t begin;
   clock_t end;
   double time_spent;
+  vector<int> prediction;
 
   if (argc >= 5) {
     method = atoi(argv[4]);
@@ -34,11 +35,11 @@ int main(int argc, char **argv) {
   if (method == 0) {
     machinelearning::baysian::NaiveBayesian naive(cfg);
     naive.Train(train);
-    naive.Predict(input);  // call function to do prediction
+    prediction = naive.Predict(input);  // call function to do prediction
   } else if (method == 1) {
     machinelearning::baysian::BayesianNetwork bnetwork(cfg);
     bnetwork.Train(train);
-    bnetwork.Predict(input);
+    prediction = bnetwork.Predict(input);
   }
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

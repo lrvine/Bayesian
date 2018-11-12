@@ -1,13 +1,15 @@
 #ifndef ML_H_
 #define ML_H_
 
+#include <vector>
+
 namespace machinelearning {
 
 class MachineLearning {
  public:
   virtual void Train(char *) = 0;
-  virtual void Predict(char *) = 0;
-  void Accuracy(int *, int *) const;
+  virtual std::vector<int> Predict(char *) = 0;
+  void Accuracy(std::vector<int>, std::vector<int>) const;
 
  protected:
   virtual void ParseConfiguration(char *) = 0;

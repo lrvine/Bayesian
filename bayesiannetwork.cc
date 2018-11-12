@@ -509,31 +509,22 @@ void BayesianNetwork::Train(char *train_file) {
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-void BayesianNetwork::Predict(char *test_file) {
+std::vector<int> BayesianNetwork::Predict(char *test_file) {
+  std::vector<int> outcome(num_test_instances_, 0);
+  // this vector store our prediciton
+  std::vector<int> truth(num_test_instances_, 0);
+  // this vector store the real result for comparison
+  std::vector<int> oneLine((num_attributes_ + 1), 0);
+  // store each instance for processing
+  std::vector<long double> decision((num_output_class_), 0);
+  // store the probability of each choice
+
   std::ifstream testInputFile(test_file);
   if (!testInputFile) {
     std::cout << "Can't open test data file!" << std::endl;
-    return;
+    return outcome;
   }
   std::string Buf;
-
-  int *truth = new int[num_test_instances_];  // this array store the real
-                                              // result for comparison
-  for (int w = 0; w < num_test_instances_; w++) {
-    truth[w] = 0;
-  }
-
-  int *outcome =
-      new int[num_test_instances_];  // this array store our prediciton
-  for (int f = 0; f < num_test_instances_; f++) {
-    outcome[f] = 0;
-  }
-
-  double *oneLine =
-      new double[num_attributes_ + 1];  // store each instance for processing
-
-  long double *decision = new long double[num_output_class_];
-  // store the probability of each choice
 
   for (int a = 0; a < num_test_instances_; a++) {
     getline(testInputFile, Buf);
@@ -584,12 +575,7 @@ void BayesianNetwork::Predict(char *test_file) {
   }
   Accuracy(outcome, truth);
   // call function "accuracy" to calculate the accuracy
-
-  // release memory
-  delete[] truth;
-  delete[] decision;
-  delete[] oneLine;
-  delete[] outcome;
+  return outcome;
 }
 
 }  // namespace baysian

@@ -15,7 +15,7 @@ class NaiveBayesian : public Bayesian {
   ~NaiveBayesian();
   // release memory
   void Train(char *);
-  void Predict(char *);
+  std::vector<int> Predict(char *);
   // calculate the probability of each choice
   // and choose the greatest one as our prediction
 
