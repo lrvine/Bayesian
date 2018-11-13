@@ -9,7 +9,7 @@ class MachineLearning {
  public:
   virtual void Train(char *) = 0;
   virtual std::vector<int> Predict(char *) = 0;
-  void Accuracy(std::vector<int>, std::vector<int>) const;
+  void Accuracy(std::vector<int> &, std::vector<int> &) const;
 
  protected:
   virtual void ParseConfiguration(char *) = 0;
