@@ -1,8 +1,6 @@
 # Bayesian
 Naive Bayes classifier and Bayesian network classifier C++ implementation
 
-//TODO refactor the code to smaller functions and rename variables to be more meaningful
-
 Reference :
 
 [Naive Bayes Classifier](https://en.wikipedia.org/wiki/Naive_Bayes_classifier)
