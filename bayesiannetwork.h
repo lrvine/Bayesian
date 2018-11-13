@@ -11,7 +11,7 @@ class BayesianNetwork : public Bayesian {
   BayesianNetwork(char *);
   ~BayesianNetwork();
   // initialize all the information we need from training data
-  std::vector<int> Predict(char *);
+  std::vector<int> Predict(char *, bool);
   // calculate the probability of each choice and choose the greatest one as our
   // prediction
   void Train(char *);

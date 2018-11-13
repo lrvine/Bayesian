@@ -178,12 +178,12 @@ void NaiveBayesian::Train(char *train_file) {
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-std::vector<int> NaiveBayesian::Predict(char *test_file) {
+std::vector<int> NaiveBayesian::Predict(char *test_file, bool has_truth = 1) {
   std::vector<int> outcome(num_test_instances_, 0);
   // this vector store our prediciton
   std::vector<int> truth(num_test_instances_, 0);
   // this vector store the real result for comparison
-  std::vector<int> oneLine((num_attributes_ + 1), 0);
+  std::vector<int> oneLine((num_attributes_), 0);
   // store each instance for processing
   std::vector<long double> decision(
       (num_class_for_each_attribute_[num_attributes_]), 0);
@@ -210,10 +210,11 @@ std::vector<int> NaiveBayesian::Predict(char *test_file) {
       oneLine[u] = stod(Buf);
     }
     // read one instance for prediction
-
-    getline(lineStream, Buf, ',');
-    truth[a] = stod(Buf);
-    // store the truth
+    if (has_truth) {
+      getline(lineStream, Buf, ',');
+      truth[a] = stod(Buf);
+      // store the truth
+    }
     for (int x = 0; x < num_class_for_each_attribute_[num_attributes_]; x++) {
       for (int j = 0; j < num_attributes_; j++) {
         if (is_discrete_[j] == 1)  // if this attribute is is_discrete_
@@ -261,7 +262,7 @@ std::vector<int> NaiveBayesian::Predict(char *test_file) {
     }
     outcome[a] = (big + 1);
   }
-  Accuracy(outcome, truth);
+  if (has_truth) Accuracy(outcome, truth);
   // call function "caauracy" to calculate the accuracy
   return outcome;
 }

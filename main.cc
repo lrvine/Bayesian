@@ -35,11 +35,14 @@ int main(int argc, char **argv) {
   if (method == 0) {
     machinelearning::baysian::NaiveBayesian naive(cfg);
     naive.Train(train);
-    prediction = naive.Predict(input);  // call function to do prediction
+    prediction = naive.Predict(input, 1);
+    // Call function to do prediction
+    // Pass second argument "1" to denote that we will provide answer/truth for
+    // this prediction. Pass second argument "0" to do real prediction.
   } else if (method == 1) {
     machinelearning::baysian::BayesianNetwork bnetwork(cfg);
     bnetwork.Train(train);
-    prediction = bnetwork.Predict(input);
+    prediction = bnetwork.Predict(input, 1);
   }
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

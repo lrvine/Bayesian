@@ -509,12 +509,12 @@ void BayesianNetwork::Train(char *train_file) {
 
 // calculate the probability of each choice and choose the greatest one as our
 // prediction
-std::vector<int> BayesianNetwork::Predict(char *test_file) {
+std::vector<int> BayesianNetwork::Predict(char *test_file, bool has_truth) {
   std::vector<int> outcome(num_test_instances_, 0);
   // this vector store our prediciton
   std::vector<int> truth(num_test_instances_, 0);
   // this vector store the real result for comparison
-  std::vector<int> oneLine((num_attributes_ + 1), 0);
+  std::vector<int> oneLine((num_attributes_), 0);
   // store each instance for processing
   std::vector<long double> decision((num_output_class_), 0);
   // store the probability of each choice
@@ -533,13 +533,15 @@ std::vector<int> BayesianNetwork::Predict(char *test_file) {
     for (int m = 0; m < num_output_class_; m++) decision[m] = 1;
 
     // read one instance for prediction
-    for (int u = 0; u <= num_attributes_; u++) {
+    for (int u = 0; u < num_attributes_; u++) {
       getline(lineStream, Buf, ',');
       oneLine[u] = stod(Buf);
     }
-
-    truth[a] = oneLine[num_attributes_];
-    // store the truth
+    if (has_truth) {
+      getline(lineStream, Buf, ',');
+      truth[a] = stod(Buf);
+      // store the truth
+    }
 
     // calculate each choice's probability
     for (int x1 = 0; x1 < num_output_class_; x1++) {
