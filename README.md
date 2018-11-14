@@ -9,7 +9,7 @@ Reference :
 
 Usage:
 ```
-./bayesian [training data file] [input test file] [configuration file] [method]
+./bayesian [training data file] [test data file] [configuration file] [method]
 ```
 method :
 ```
@@ -19,17 +19,17 @@ method :
 
 Example:
 ```
-./bayesian data.txt test.txt cfg.txt 0
+./bayesian breast_cancer_data/breast-cancer-wisconsin-400-records-train breast_cancer_data/breast-cancer-wisconsin-299-records-test breast_cancer_data/breast-cancer-wisconsin.cfg 0
 ```
-
 
 
 Training & Test data are in CSV format:
 ```
-[ attribute 1 of data 1 ],[ attribute 2 of data 1 ], ........ ,[ result of data 1 ]
-[ attribute 1 of data 2 ],[ attribute 2 of data 2 ], ........ ,[ result of data 2 ]
-[ attribute 1 of data 3 ],[ attribute 2 of data 3 ], ........ ,[ result of data 3 ]
+[ attribute 1 of data 1 ],[ attribute 2 of data 1 ], ........ ,[ true result of data 1 ]
+[ attribute 1 of data 2 ],[ attribute 2 of data 2 ], ........ ,[ true result of data 2 ]
+[ attribute 1 of data 3 ],[ attribute 2 of data 3 ], ........ ,[ true result of data 3 ]
 ```
+* For real prediction, don't need to provide true result. Need to pass second argument "0" for the "Predict" API.
 
 Configuration file format:
 ```
@@ -43,4 +43,4 @@ Configuration file format:
 * Bayesian Network DO NOT support continuous data for now.
 ```
 
-Data set is acquired from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
+Data set is acquired from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29)
