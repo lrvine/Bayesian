@@ -12,15 +12,12 @@ class NaiveBayesian : public Bayesian {
  public:
   NaiveBayesian(char *);
   // initialize all the information we need from training data
-  ~NaiveBayesian();
-  // release memory
   void Train(char *);
   std::vector<int> Predict(char *, bool);
   // calculate the probability of each choice
   // and choose the greatest one as our prediction
-
  private:
-  long double **probabilityTable;
+  std::vector<std::vector<long double> > probabilityTable;
 };
 
 }  // namespace baysian
