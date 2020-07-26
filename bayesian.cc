@@ -33,7 +33,7 @@ void Bayesian::ParseConfiguration(char *cfg_file) {
   }
 
   num_output_class_ = num_class_for_each_attribute_[num_attributes_];
-  num_class_for_each_attributes_.resize(num_output_class_, 0);
+  output_class_cnt_.resize(num_output_class_, 0);
 
   configure.close();
 }

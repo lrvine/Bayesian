@@ -58,7 +58,7 @@ void NaiveBayesian::Train(char *train_file) {
       oneLine[y] = stod(Buf);
     }
 
-    num_class_for_each_attributes_[static_cast<int>(oneLine[num_attributes_]) -
+    output_class_cnt_[static_cast<int>(oneLine[num_attributes_]) -
                                    1]++;  // count the result
 
     for (int j = 0; j < num_attributes_; j++) {
@@ -102,7 +102,7 @@ void NaiveBayesian::Train(char *train_file) {
         // claculate every conjuction's contribution of probability
         {
           probabilityTable[(t * num_output_class_ + d)][w] /=
-              (num_class_for_each_attributes_[d] + correction);
+              (output_class_cnt_[d] + correction);
         }
       }
     } else if (is_discrete_[t] == 0)
@@ -112,20 +112,20 @@ void NaiveBayesian::Train(char *train_file) {
       for (int h = 0; h < num_output_class_; h++) {
         long double a0 =
             pow(probabilityTable[(t * num_output_class_ + h)][0], 2) /
-            num_class_for_each_attributes_[h];
+            output_class_cnt_[h];
         long double a1 = probabilityTable[(t * num_output_class_ + h)][1] - a0;
-        long double a2 = a1 / num_class_for_each_attributes_[h];
+        long double a2 = a1 / output_class_cnt_[h];
         long double a3 = sqrt(a2);
         probabilityTable[(t * num_output_class_ + h)][1] = a3;
         probabilityTable[(t * num_output_class_ + h)][0] /=
-            num_class_for_each_attributes_[h];
+            output_class_cnt_[h];
       }
     }
   }
   // calculate the probability of each resulting class
   for (int probIndex = 0; probIndex < num_output_class_; probIndex++)
-    num_class_for_each_attributes_[probIndex] =
-        num_class_for_each_attributes_[probIndex] / num_train_instances_;
+    output_class_cnt_[probIndex] =
+        output_class_cnt_[probIndex] / num_train_instances_;
 }
 
 // calculate the probability of each choice and choose the greatest one as our
@@ -188,7 +188,7 @@ std::vector<int> NaiveBayesian::Predict(char *test_file, bool has_truth = 1) {
           decision[x] *= a4;
         }
       }
-      decision[x] *= num_class_for_each_attributes_[x];
+      decision[x] *= output_class_cnt_[x];
     }
     // decide which choice has the highest probability
     int big = 0;

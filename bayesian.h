@@ -9,7 +9,7 @@ namespace baysian {
 class Bayesian : public MachineLearning {
  protected:
   void ParseConfiguration(char *);
-  std::vector<double> num_class_for_each_attributes_;
+  std::vector<double> output_class_cnt_;
   // this array store the total number of
   // each decision's class in training data
   std::vector<int> is_discrete_;

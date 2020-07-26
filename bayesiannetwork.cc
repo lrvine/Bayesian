@@ -108,7 +108,7 @@ void BayesianNetwork::Train(char *train_file) {
                        oneLine[rank[h][1]] - 1]++;
     }
 
-    num_class_for_each_attributes_[oneLine[num_attributes_] - 1]++;
+    output_class_cnt_[oneLine[num_attributes_] - 1]++;
   }
 
   trainingDataFile.close();
@@ -129,7 +129,7 @@ void BayesianNetwork::Train(char *train_file) {
 
       for (int w = 0; w < num_class_for_each_attribute_[t]; w++)
         array_type_one[(t * num_output_class_ + d)][w] /=
-            (num_class_for_each_attributes_[d] + correction);
+            (output_class_cnt_[d] + correction);
     }
   }
 
@@ -193,7 +193,7 @@ void BayesianNetwork::Train(char *train_file) {
                                 num_class_for_each_attribute_[rank[t][1]];
            w2++)
         array_type_three[t * num_output_class_ + d][w2] /=
-            (num_class_for_each_attributes_[d] + correction2);
+            (output_class_cnt_[d] + correction2);
     }
   }
 
@@ -451,10 +451,9 @@ void BayesianNetwork::Train(char *train_file) {
 
   // calculate the probability of each resulting class
   for (int p = 0; p < num_output_class_; p++) {
-    num_class_for_each_attributes_[p] =
-        num_class_for_each_attributes_[p] / num_train_instances_;
+    output_class_cnt_[p] = output_class_cnt_[p] / num_train_instances_;
 #ifdef DEBUG
-    std::cout << num_class_for_each_attributes_[p] << " ";
+    std::cout << output_class_cnt_[p] << " ";
 #endif
   }
 }
@@ -513,7 +512,7 @@ std::vector<int> BayesianNetwork::Predict(char *test_file, bool has_truth) {
             conditional_probability_table_[x2][static_cast<int>(oneLine[x2]) -
                                                1][reg_add];
       }
-      decision[x1] *= num_class_for_each_attributes_[x1];
+      decision[x1] *= output_class_cnt_[x1];
     }
 
     // decide which choice has the highest probability
@@ -534,3 +533,4 @@ std::vector<int> BayesianNetwork::Predict(char *test_file, bool has_truth) {
 
 }  // namespace baysian
 }  // namespace machinelearning
+
