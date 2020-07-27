@@ -10,7 +10,7 @@ void MachineLearning::Accuracy(std::vector<int>& outcome,
                                std::vector<int>& truth) const {
   double correct = 0;  // store the number of correct predictions
 
-  for (int i = 0; i < num_test_instances_; i++)
+  for (int i = 0; i < num_test_instances_; ++i)
   // count the number of correct predictions
   {
     if (outcome[i] == truth[i]) correct++;

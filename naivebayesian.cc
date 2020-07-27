@@ -29,17 +29,17 @@ void NaiveBayesian::Train(char *train_file) {
   // this "probabilityTable" store the count of every possible combination
   // and divide each of them by the total occurences
   probabilityTable.resize(num_attributes_ * num_output_class_);
-  for (int j = 0; j < num_attributes_; j++) {
-    if (is_discrete_[j] == 1)  // if this attribute is is_discrete_
+  for (int i = 0; i < num_attributes_; ++i) {
+    if (is_discrete_[i] == 1)  // if this attribute is is_discrete_
     {
-      for (int i = (j * num_output_class_); i < ((j + 1) * num_output_class_);
-           i++)
-        probabilityTable[i].resize(num_class_for_each_attribute_[j], 0);
-    } else if (is_discrete_[j] == 0)  // if this attribute is continuous
+      for (int j = (i * num_output_class_); j < ((i + 1) * num_output_class_);
+           ++j)
+        probabilityTable[j].resize(num_class_for_each_attribute_[i], 0);
+    } else if (is_discrete_[i] == 0)  // if this attribute is continuous
     {
-      for (int i = (j * num_output_class_); i < ((j + 1) * num_output_class_);
-           i++)
-        probabilityTable[i].resize(2, 0);
+      for (int j = (i * num_output_class_); j < ((i + 1) * num_output_class_);
+           ++j)
+        probabilityTable[j].resize(2, 0);
       // the first one store mean , the second store the standard deviation
     }
   }
@@ -48,20 +48,20 @@ void NaiveBayesian::Train(char *train_file) {
   std::vector<double> oneLine((num_attributes_ + 1), 0);
 
   // store the information of each instance into probabilityTable
-  for (int i = 1; i <= num_train_instances_; i++) {
+  for (int i = 1; i <= num_train_instances_; ++i) {
     getline(trainingDataFile, Buf);
     std::stringstream lineStream(Buf);
 
-    for (int y = 0; y <= num_attributes_; y++) {
+    for (int j = 0; j <= num_attributes_; ++j) {
       // read one instance for processing
       getline(lineStream, Buf, ',');
-      oneLine[y] = stod(Buf);
+      oneLine[j] = stod(Buf);
     }
 
     output_class_cnt_[static_cast<int>(oneLine[num_attributes_]) -
-                                   1]++;  // count the result
+                      1]++;  // count the result
 
-    for (int j = 0; j < num_attributes_; j++) {
+    for (int j = 0; j < num_attributes_; ++j) {
       if (is_discrete_[j] == 1)  // if this attribute is is_discrete_
       {
         probabilityTable[j * num_output_class_ +
@@ -81,24 +81,24 @@ void NaiveBayesian::Train(char *train_file) {
 
   trainingDataFile.close();
   // processing the information in the probabilityTable to get the proabability
-  for (int t = 0; t < num_attributes_; t++) {
+  for (int t = 0; t < num_attributes_; ++t) {
     if (is_discrete_[t] == 1)  // if this attribute is is_discrete_
     {
-      for (int d = 0; d < num_output_class_; d++) {
+      for (int d = 0; d < num_output_class_; ++d) {
         int correction = 0;
-        for (int o = 0; o < num_class_for_each_attribute_[t]; o++)
+        for (int o = 0; o < num_class_for_each_attribute_[t]; ++o)
         // this loop judge weather there is zero occurence of some conjuction
         // if it dose, then do Laplacian correction
         {
           if (probabilityTable[(t * num_output_class_ + d)][o] == 0) {
             correction = num_class_for_each_attribute_[t];
-            for (int p = 0; p < num_class_for_each_attribute_[t]; p++) {
+            for (int p = 0; p < num_class_for_each_attribute_[t]; ++p) {
               probabilityTable[(t * num_output_class_ + d)][p]++;
             }
             break;
           }
         }
-        for (int w = 0; w < num_class_for_each_attribute_[t]; w++)
+        for (int w = 0; w < num_class_for_each_attribute_[t]; ++w)
         // claculate every conjuction's contribution of probability
         {
           probabilityTable[(t * num_output_class_ + d)][w] /=
@@ -109,7 +109,7 @@ void NaiveBayesian::Train(char *train_file) {
     // if this attribute is continuous,we assume it's Gaussian distribution
     // claculate the mean and standard deviation of each continuous attribute
     {
-      for (int h = 0; h < num_output_class_; h++) {
+      for (int h = 0; h < num_output_class_; ++h) {
         long double a0 =
             pow(probabilityTable[(t * num_output_class_ + h)][0], 2) /
             output_class_cnt_[h];
@@ -123,7 +123,7 @@ void NaiveBayesian::Train(char *train_file) {
     }
   }
   // calculate the probability of each resulting class
-  for (int probIndex = 0; probIndex < num_output_class_; probIndex++)
+  for (int probIndex = 0; probIndex < num_output_class_; ++probIndex)
     output_class_cnt_[probIndex] =
         output_class_cnt_[probIndex] / num_train_instances_;
 }
@@ -148,8 +148,8 @@ std::vector<int> NaiveBayesian::Predict(char *test_file, bool has_truth = 1) {
   std::cout << "Start prediction " << std::endl;
   std::string Buf;
 
-  for (int a = 0; a < num_test_instances_; a++) {
-    for (int m = 0; m < num_output_class_; m++) decision[m] = 1;
+  for (int i = 0; i < num_test_instances_; ++i) {
+    for (int m = 0; m < num_output_class_; ++m) decision[m] = 1;
     // set the array's entries as 1 for each testing instance
 
     getline(testInputFile, Buf);
@@ -162,11 +162,11 @@ std::vector<int> NaiveBayesian::Predict(char *test_file, bool has_truth = 1) {
     // read one instance for prediction
     if (has_truth) {
       getline(lineStream, Buf, ',');
-      truth[a] = stod(Buf);
+      truth[i] = stod(Buf);
       // store the truth
     }
-    for (int x = 0; x < num_output_class_; x++) {
-      for (int j = 0; j < num_attributes_; j++) {
+    for (int x = 0; x < num_output_class_; ++x) {
+      for (int j = 0; j < num_attributes_; ++j) {
         if (is_discrete_[j] == 1)  // if this attribute is is_discrete_
         {
           decision[x] *= probabilityTable[(j * num_output_class_) + x]
@@ -193,13 +193,13 @@ std::vector<int> NaiveBayesian::Predict(char *test_file, bool has_truth = 1) {
     // decide which choice has the highest probability
     int big = 0;
     long double hug = decision[0];
-    for (int v = 1; v < num_output_class_; v++) {
-      if (decision[v] > hug) {
-        big = v;
-        hug = decision[v];
+    for (int j = 1; j < num_output_class_; ++j) {
+      if (decision[j] > hug) {
+        big = j;
+        hug = decision[j];
       }
     }
-    outcome[a] = (big + 1);
+    outcome[i] = (big + 1);
   }
   if (has_truth) Accuracy(outcome, truth);
   // call function "caauracy" to calculate the accuracy
