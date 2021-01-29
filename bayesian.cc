@@ -27,7 +27,7 @@ void Bayesian::ParseConfiguration(char *cfg_file) {
 
   for (int i = 0; i <= num_attributes_; ++i) {  // read the number of classes
     configure >> num_class_for_each_attribute_[i];
-    if (is_discrete_[i])  // set num_class_for_each_attribute_ as 2 for
+    if (i != num_attributes_ &&  is_discrete_[i])  // set num_class_for_each_attribute_ as 2 for
                           // continuous data
       num_class_for_each_attribute_[i] = 2;
   }
